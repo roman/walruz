@@ -3,8 +3,8 @@
 coverage
 rdoc
 pkg
-examples/beatles/tmp/*
-examples/beatles/log/*
-examples/beatles/db/schema.rb
-examples/beatles/db/*.sqlite3
+examples/rails/tmp/*
+examples/rails/log/*
+examples/rails/db/schema.rb
+examples/rails/db/*.sqlite3
 
