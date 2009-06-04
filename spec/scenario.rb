@@ -61,7 +61,7 @@ class AuthorPolicy < Walruz::Policy
   
 end
 
-class ColaborationPolicy < Walruz::Policy
+class AuthorInColaborationPolicy < Walruz::Policy
   
   def authorized?(beatle, song)
     return false unless song.colaboration
@@ -78,8 +78,8 @@ class Song
   include Walruz::Subject
   extend Walruz::Utils
 
-  check_authorizations :sing => orP(AuthorPolicy, ColaborationPolicy),
-                       :sell => andP(AuthorPolicy, notP(ColaborationPolicy))
+  check_authorizations :sing => orP(AuthorPolicy, AuthorInColaborationPolicy),
+                       :sell => andP(AuthorPolicy, notP(AuthorInColaborationPolicy))
   
   attr_accessor :name
   attr_accessor :colaboration
