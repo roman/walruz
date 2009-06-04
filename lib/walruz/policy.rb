@@ -29,7 +29,7 @@ module Walruz
     # Returns: (subject -> [Bool, Hash])
     #
     # Example:
-    #   subjects.filter(PolicyXYZ.with_actor(some_user))
+    #   subjects.filter(&PolicyXYZ.with_actor(some_user))
     #
     def self.with_actor(actor)
       policy_instance = self.new
