@@ -1,5 +1,5 @@
 module Policies
-  include Walrus::Utils
+  extend Walruz::Utils
   
   #
   # Add an autoload invocation to the policies you implement on the policies
@@ -7,6 +7,8 @@ module Policies
   # Examples:
   #   autoload :AdminPolicy, 'policies/admin'
   #   autoload :FooPolicy, 'policies/other'
+  
+  
   #
   # Then use it on your models:
   #

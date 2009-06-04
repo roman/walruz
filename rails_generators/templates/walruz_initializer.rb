@@ -2,7 +2,7 @@ Walruz.setup do |config|
   
   #
   # Specify which models behave like Actors in your authorization system
-  # config.actors = ['User']
+  # config.actors = [User]
   
   # Specify which models behave like Subjects (default: All of them)
   config.subjects = [ActiveRecord::Base]

@@ -1,7 +1,7 @@
 class Policies::AdminPolicy < Walruz::Policy
   
   def authorized?(user, _)
-    # user.is_admin?
+    raise NotImplementedError.new("You need to implement the policy")
   end
   
 end
