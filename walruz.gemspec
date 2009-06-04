@@ -22,6 +22,8 @@ Gem::Specification.new do |s|
     "lib/walruz/subject.rb",
     "lib/walruz/utils.rb",
     "rails_generators/walruz_generator.rb",
+    "rails_generators/walruz_policy_generator.rb",
+    "rails_generators/templates/policy.rb",
     "rails_generators/templates/admin_policy_example.rb",
     "rails_generators/templates/policies.rb",
     "rails_generators/templates/unauthorized.html",
