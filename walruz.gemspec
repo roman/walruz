@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{walruz}
-  s.version = "0.0.0"
+  s.version = "0.0.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Roman Gonzalez"]
@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
     "rails_generators/templates/admin_policy_example.rb",
     "rails_generators/templates/policies.rb",
     "rails_generators/templates/unauthorized.html",
-    "rails_generators/templates/walrus_initializer.rb",
+    "rails_generators/templates/walruz_initializer.rb",
     "spec/scenario.rb",
     "spec/spec.opts",
     "spec/spec_helper.rb",
@@ -39,7 +39,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{walruz}
   s.rubygems_version = %q{1.3.3}
-  s.summary = %q{TODO}
+  s.summary = "Powerful and simple Authorization Framework"
   s.test_files = [
     "spec/scenario.rb",
     "spec/spec_helper.rb",
