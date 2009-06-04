@@ -20,8 +20,19 @@ module Walruz
     # See Walruz::Actor.can?
     #
     def can_be?(label, actor)
-      label  = self.class._walruz_policies.key?(label) ? label : :default
-      result = Array(self.class._walruz_policies[label].new.authorized?(actor, self))
+      # get_valid_label(label)
+      label = if self.class._walruz_policies.key?(:default)
+                self.class._walruz_policies.key?(label) ? label : :default
+              else
+                if self.class._walruz_policies.key?(label) 
+                  label 
+                else 
+                  raise FlagNotFound.new(self, label)
+                end
+              end
+      
+      result = Array(self.class._walruz_policies[label].
+                                return_policy.new.authorized?(actor, self))
       if result[0]
         result[1]
       else

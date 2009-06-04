@@ -49,9 +49,11 @@ module Walruz
           acum = [true, {}]
           self.class.policies.each do |policy|
             break unless acum[0]
-            result = Array(policy.new.authorized?(actor, subject))
+            policy_instance = policy.new
+            policy_instance.set_params(acum[1])
+            result = Array(policy_instance.authorized?(actor, subject))
             acum[0] &&= result[0]
-            acum[1].merge(result[1]) unless result[1].nil?
+            acum[1].merge!(result[1]) unless result[1].nil?
           end
           acum[0] ? acum : acum[0]
         end

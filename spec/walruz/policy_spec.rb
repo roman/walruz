@@ -26,4 +26,16 @@ describe Walruz::Policy do
     
   end
   
+  describe "when using dependence_on macro" do
+    
+    it "should work properly" do
+      lambda do
+        Beatle::PAUL.sing_with_john(Song::YESTERDAY)
+      end.should raise_error(Walruz::NotAuthorized)
+      
+      Beatle::PAUL.sing_with_john(Song::A_DAY_IN_LIFE).should == "Ok John, Let's Play 'A Day In Life'"
+    end
+  
+  end
+  
 end

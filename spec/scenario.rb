@@ -23,6 +23,11 @@ class Beatle
       "I just need myself, Let's Rock! \\m/"
     end
   end
+  
+  def sing_with_john(song)
+    can?(:sing_with_john, song)
+    "Ok John, Let's Play '%s'" % song.name
+  end
 
 
   JOHN   = self.new("John")
@@ -74,13 +79,23 @@ class AuthorInColaborationPolicy < Walruz::Policy
   
 end
 
+
+class ColaboratingWithJohnPolicy < Walruz::Policy
+  depends_on AuthorInColaborationPolicy
+  
+  def authorized?(beatle, song)
+    params[:owner].authors.include?(Beatle::JOHN)
+  end
+  
+end
+
 class Song
   include Walruz::Subject
   extend Walruz::Utils
 
   check_authorizations :sing => orP(AuthorPolicy, AuthorInColaborationPolicy),
-                       :sell => andP(AuthorPolicy, notP(AuthorInColaborationPolicy))
-  
+                       :sell => andP(AuthorPolicy, notP(AuthorInColaborationPolicy)),
+                       :sing_with_john => ColaboratingWithJohnPolicy
   attr_accessor :name
   attr_accessor :colaboration
   attr_accessor :author
