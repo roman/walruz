@@ -1,7 +1,187 @@
-= walruz
+= Walruz: Simple but Powerful Authorization Framework
 
-Description goes here.
+== Basic and Terminology
+
+Walruz facilitates the separation between the authorization process on the business logic and, the actions executed after the validation of the authorizations are done. To achieve this, Walruz follows the following terminology:
+
+  - Subject: Object that is going to be managed (Profile, Posts)
+  - Actor: Entity that wants to perform an action on a subject (User, Admin)
+  - Policy: A set of rules that tells if the Actor can perform the desired action on the Subject
+
+== Walruz Architecture 
+
+Walruz provides a module (or class) that helps on the implementation of the concepts given previously, this are:
+  
+  - Walruz::Subject 
+    Provides the interface to associate policies to an action in the subject
+  
+  - Walruz::Actor
+    Provides the interface to perform queries to validate if an action can be done between the
+    actor and the subject
+    
+  - Walruz::Policy
+    Provides the interface to implement authorization logic
+
+== Subjects specify which policies are related to which actions
+
+Subject classes may specify a set of actions that can be performed to them using the check_authorization method
+
+  class ASubject
+    check_authorization :show => Policy1,
+                        :edit => Policy2
+  end
+
+If there is just one policy to every possible action performed to the subject, you may specify the :default action, or just specify the Policy class.
+
+  class ASubject
+    check_authorization PolicyClazz
+  end
+  
+  class AnotherSubject
+    check_authorization :default => PolicyClazz
+  end
+  
+You can also specify other flags with the default flag.
+
+class ASubject
+  check_authorization :show => Policy1,
+                      :edit => Policy2,
+                      :default => DefaultPolicy
+end
+
+
+== Actors verify if they are able to perform an action on a subject
+
+Actor classes may use the method can?(action, subject) to check if the actor can perform the given action on the subject. This method returns a Hash with parameters in case the assertion is positive; in case it is not authorized, a Walruz::NotAuthorized exception is thrown. 
+
+In case the given action is not assigned to any policy, a default Policy will be executed (if given), if no default policy is given then a Walruz::FlagNotFound exception will be thrown.
+
+Example:
+  
+  current_user.can?(:read, friends_profile)
+
+
+== Implementing Policies
+
+To implement a Policy, is recommended (but not mandatory) that the Policy class inherits from the Walruz::Policy class. This class provides a method called `authorized?` that return either a Boolean, or a Hash with two positions, the first one being a Boolean, and the second being a Hash of parameters returned from the Policy.
+
+Example:
+  
+  class AdminPolicy < Walruz::Policy
+  
+    def authorized?(actor, _)
+      actor.is_admin?
+    end
+  
+  end
+
+== Composing basic policies to create complex ones
+
+Sometimes policies can turn really messy, specially when you have a complex business model. The good news is that, normally this complex policies are a composition of more simple policies (eg. IsOwnerAndHaveKeyPolicy). Instead of creating this new classes that replicates the same logic of basic policies, we could merge them together in the following way:
+
+IsOwnerAndHaveKeyPolicy = Walruz::Utils.andP(IsOwnerPolicy, HaveKeyPolicy)
+
+We also have the following utilities methods `orP` and `notP`, this way you can create complex policies based on simple ones.
+
+== Dependencies between Policies
+
+Sometimes you would like to have a Policy that strictly depends in other ones, for example the previous HaveKeyPolicy could have the restriction that only the Owner must have the key, so we could re-implement this policy as:
+
+class HaveKeyPolicy < Walruz::Policy
+  depends_on IsOwnerPolicy
+end
+
+Suppose you require the parameters returned by the previous Policy, you can have them with the params method, it works just like a request.params from any Web Framework in Ruby.
+
+== Big Example
+
+Suppose we have a social network site, and we define the following models:
+
+  - User: The representation of the user on the system
+  - Friendship: The representation of a friendship association between two different users
+  - Profile: The personal profile of a given user
+
+And we want to set the following restrictions on our system:
+
+  - A user can see other's user profile if it is either (a) A friend of the user, or (b) is 
+    the admin of the site
+  - A user can establish not to share photos with friends on her profile, even if there is
+    a friend relationship
+
+We can define the following policies like this:
+
+class AdminPolicy < Walruz::Policy
+  
+  def authorized?(user, _)
+    # complex logic here
+  end
+
+end
+
+class FriendPolicy < Walruz::Policy
+
+  def authorized?(user, subject)
+    # complex logic here
+  end
+
+end
+
+class ShowPicturesPolicy < Walruz::Policy
+  depends_on FriendPolicy
+  
+  
+  def authorized?(user, subject)
+    # complex logic here
+  end
+
+end
+
+Each of these policies defines an `authorized?` method, this method can either return a Boolean specifying that the policy is valid or not, or an Array with two positions, the first one being the Boolean, and the second one being a Hash of parameters that are returned from the Policy.
+
+Once we define the policies, we can associate them to our profile like this:
+
+class Profile
+  include Walruz::Subject
+  extend Walruz::Utils
+  
+  
+  check_authorizations :show => orP(AdminPolicy, FriendPolicy),
+                       :see_pictures => ShowPicturesPolicy
+  
+  
+  belongs_to :user
+  has_many :pictures
+  
+  def show_pictures_to(user)
+    user.can?(:see_pictures, self)
+    self.pictures
+  end
+  
+end
+
+As you may infer, we want to be able to compose simple policies in more complex ones, we can do that using the `orP`, `andP`, `notP` or `depends_on` method. With this methods you can construct new complex policies on the fly using a composition of basic policies.
+
+
+== Setup on Rails
+
+This gem is ready to get going with any Rails project, you just have to run:
+
+  $ script/generate walruz
+  
+This will generate the policies structure on the lib/ folder, and also it will add an initializer that setups your models for Walruz.
+
+If you want to generate new policies, you may do so executing:
+
+  $ script/generate walruz_policy policy_name
+  
+This will generate a new policy skeleton on your lib/walruz/policies folder
+
+== More examples
+
+You may check the project in the examples/ directory for more info, on the rails project, take a look on the spec/models/beatle_spec.rb file, it's really illustrating.
 
 == Copyright
 
-Copyright (c) 2009 Roman Gonzalez. See LICENSE for details.
+Copyright (c) 2009 Roman Gonzalez <romanandreg@gmail.com>. 
+Copyright (c) 2009 Noomii inc. <http://www.noomii.com>
+All rights reserved.
