@@ -1,16 +1,31 @@
 module Walruz
   module Utils
     
+    module PolicyCompositionHelper
+      
+      # NOTE: Not using cattr_accessor to avoid dependencies with ActiveSupport
+      
+      def policies=(policies)
+        @policies = policies
+      end
+      
+      def policies
+        @policies
+      end
+      
+      def policy=(policy)
+        @policy = policy
+      end
+      
+      def policy
+        @policy
+      end
+      
+    end
+    
     def orP(*policies)
       clazz = Class.new(Walruz::Policy) do
-        
-        def self.policies=(p)
-          @policies = p
-        end
-        
-        def self.policies
-          @policies
-        end
+        extend PolicyCompositionHelper
         
         def authorized?(actor, subject)
           result = nil
@@ -27,11 +42,12 @@ module Walruz
     end
     
     def andP(*policies)
-      Class.new(Walruz::Policy) do
+      clazz = Class.new(Walruz::Policy) do
+        extend PolicyCompositionHelper
         
         def authorized?(actor, subject)
           acum = [true, {}]
-          policies.each do |policy|
+          self.class.policies.each do |policy|
             break unless acum[0]
             result = Array(policy.new.authorized?(actor, subject))
             acum[0] &&= result[0]
@@ -41,17 +57,22 @@ module Walruz
         end
         
       end
+      clazz.policies = policies
+      clazz
     end
     
     def notP(policy)
-      Class.new(Walruz::Policy) do
+      clazz = Class.new(Walruz::Policy) do
+        extend PolicyCompositionHelper
         
         def authorized?(actor, subject)
-          result = policy.new.authorized?(actor, subject)
+          result = self.class.policy.new.authorized?(actor, subject)
           !result[0]
         end
         
       end
+      clazz.policy = policy
+      clazz
     end
     
     module_function(:orP, :andP, :notP) 
