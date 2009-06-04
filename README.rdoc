@@ -1,0 +1,7 @@
+= walruz
+
+Description goes here.
+
+== Copyright
+
+Copyright (c) 2009 Roman Gonzalez. See LICENSE for details.
