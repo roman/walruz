@@ -5,12 +5,13 @@ module Policies
   # Add an autoload invocation to the policies you implement on the policies
   # directory. 
   # Examples:
-  #   autoload :AdminPolicy, 'policies/admin'
-  #   autoload :FooPolicy, 'policies/other'
+  #   autoload :AdminPolicy, 'walruz/policies/admin_policy'
+  #   autoload :FooPolicy, 'walruz/policies/other_policy'
   
   
   #
   # Then use it on your models:
+  # require 'walruz/policies'
   #
   # class ASubject
   #   check_authorization :create => Policies::AdminPolicy
