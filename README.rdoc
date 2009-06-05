@@ -2,7 +2,7 @@
 
 == Basic and Terminology
 
-Walruz facilitates the separation between the authorization process on the business logic and, the actions executed after the validation of the authorizations are done. To achieve this, Walruz follows the following terminology:
+Walruz facilitates the separation between the authorization process on the business logic, and the actions executed after the validation of the authorizations. To achieve this, Walruz follows the following terminology:
 
   - Subject: Object that is going to be managed (Profile, Posts)
   - Actor: Entity that wants to perform an action on a subject (User, Admin)
@@ -162,6 +162,7 @@ end
 As you may infer, we want to be able to compose simple policies in more complex ones, we can do that using the `orP`, `andP`, `notP` or `depends_on` method. With this methods you can construct new complex policies on the fly using a composition of basic policies.
 
 
+
 == Setup on Rails
 
 This gem is ready to get going with any Rails project, you just have to run:
@@ -178,7 +179,7 @@ This will generate a new policy skeleton on your lib/walruz/policies folder
 
 == More examples
 
-You may check the project in the examples/ directory for more info, on the rails project, take a look on the spec/models/beatle_spec.rb file, it's really illustrating.
+You may check the project in the examples/ directory for more info; on the rails project, take a look on the spec/models/beatle_spec.rb file, it's really illustrating.
 
 == Copyright
 
