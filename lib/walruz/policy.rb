@@ -25,7 +25,7 @@ module Walruz
     def self.with_actor(actor)
       policy_instance = self.new
       lambda do |subject|
-        policy_instance.authorized?(actor, subject)
+        policy_instance.safe_authorized?(actor, subject)[0]
       end
     end
     
@@ -81,6 +81,13 @@ module Walruz
     #
     def authorized?(actor, subject)
       raise NotImplementedError.new("You need to implement policy")
+    end
+    
+    # @private
+    def safe_authorized?(actor, subject)
+      result = Array(authorized?(actor, subject))
+      result[1] = {} if result[1].nil?
+      result
     end
     
     # @private

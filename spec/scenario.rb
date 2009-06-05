@@ -54,16 +54,28 @@ class Colaboration
   JOHN_GEORGE = self.new(Beatle::PAUL, Beatle::GEORGE)
 end
 
-class AuthorPolicy < Walruz::Policy
+class SubjectIsActorPolicy < Walruz::Policy
   
-  def authorized?(beatle, song)
-    if song.author == beatle
-      [true, { :owner => beatle }]
-    else
-      false
-    end
+  def authorized?(actor, subject)
+    actor == subject
   end
   
+end
+
+# class AuthorPolicy < Walruz::Policy
+#   
+#   def authorized?(beatle, song)
+#     if song.author == beatle
+#       [true, { :owner => beatle }]
+#     else
+#       false
+#     end
+#   end
+#   
+# end
+
+AuthorPolicy = Walruz::Utils.lift_subject(:author, SubjectIsActorPolicy) do |authorized, params, actor, subject|
+  params.merge!(:owner => actor) if authorized
 end
 
 class AuthorInColaborationPolicy < Walruz::Policy
@@ -78,7 +90,6 @@ class AuthorInColaborationPolicy < Walruz::Policy
   end
   
 end
-
 
 class ColaboratingWithJohnPolicy < Walruz::Policy
   depends_on AuthorInColaborationPolicy

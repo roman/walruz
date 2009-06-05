@@ -93,6 +93,10 @@ end
 
 Suppose you require the parameters returned by the previous Policy, you can have them with the params method, it works just like a request.params from any Web Framework in Ruby.
 
+== Need to use the same policy but with the association of a subject? Lifting to the rescue! 
+
+# TODO
+
 == Big Example
 
 Suppose we have a social network site, and we define the following models:
