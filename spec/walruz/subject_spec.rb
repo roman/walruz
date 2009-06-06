@@ -10,6 +10,16 @@ describe Walruz::Subject do
     Song.should respond_to(:check_authorizations)
   end
   
+  describe "when executing validations on an invalid subject" do
+    
+    it "should raise an Walruz::AuthorizationActionsNotDefined error" do
+      lambda do
+        Beatle::PAUL.can?(:talk_with, Beatle::JOHN)
+      end.should raise_error(Walruz::AuthorizationActionsNotDefined)
+    end
+    
+  end
+  
   describe "when executing authorization validations" do
     
     it "should raise a Walruz::NotAuthorized error when the actor is not authorized" do

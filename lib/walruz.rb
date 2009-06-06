@@ -3,10 +3,13 @@ module Walruz
   class NotAuthorized < Exception
   end
   
-  class FlagNotFound < Exception
+  class AuthorizationActionsNotDefined < Exception
+  end
+  
+  class ActionNotFound < Exception
     
     def initialize(subject, flag)
-      super("%s class doesn't have an authorization flag called %s nor a default policy", subject.name, flag)
+      super("%s class doesn't have an authorization action called :%s nor a :default policy" % [subject.class.name, flag])
     end
     
   end

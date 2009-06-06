@@ -11,6 +11,12 @@ describe Walruz::Policy do
     policy[:author_policy?].should be_true
   end
   
+  it "should raise an Walruz::ActionNotFound exception when the action is not specified, and there is no default one"  do
+    lambda do
+      Beatle::RINGO.can?(:sing_drunk, Song::TAXMAN)
+    end.should raise_error(Walruz::ActionNotFound)
+  end
+  
   describe "when using the #with_actor method" do
     
     before(:each) do

@@ -19,26 +19,38 @@ module Walruz
     # 
     # See Walruz::Actor.can?
     #
-    def can_be?(label, actor)
-      # get_valid_label(label)
-      label = if self.class._walruz_policies.key?(:default)
-                self.class._walruz_policies.key?(label) ? label : :default
+    def can_be?(action, actor)
+      check_authorization_actions_are_setted(action)
+      action = if self.class._walruz_policies.key?(:default)
+                self.class._walruz_policies.key?(action) ? action : :default
               else
-                if self.class._walruz_policies.key?(label) 
-                  label 
+                if self.class._walruz_policies.key?(action) 
+                  action
                 else 
-                  raise FlagNotFound.new(self, label)
+                  raise ActionNotFound.new(self, action)
                 end
               end
       
-      result = Array(self.class._walruz_policies[label].
-                                return_policy.new.authorized?(actor, self))
+      result = self.class._walruz_policies[action].
+                          return_policy.
+                          new.
+                          safe_authorized?(actor, self)
       if result[0]
         result[1]
       else
-        response_params = result[1].nil? ? {} : result[1]
+        response_params = result[1]
         error_message = response_params[:error_message] || "You are not authorized to access this content"
         raise NotAuthorized.new(error_message) 
+      end
+    end
+    
+    # @private
+    def check_authorization_actions_are_setted(action)
+      if self.class._walruz_policies.nil?
+        message =<<BEGIN
+You need to invoke `check_authorizations :#{action} => Policies::SomePolicy` on the #{self.class.name} class
+BEGIN
+        raise AuthorizationActionsNotDefined.new(message)
       end
     end
     

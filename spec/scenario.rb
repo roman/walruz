@@ -1,5 +1,6 @@
 class Beatle
   include Walruz::Actor
+  include Walruz::Subject
   
   attr_reader :name
   attr_accessor :songs
