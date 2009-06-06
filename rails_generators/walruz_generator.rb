@@ -15,8 +15,6 @@ class WalruzGenerator < Rails::Generator::Base
     end
   end
   
-  protected
-  
   def banner
     "Usage: #{$0} walruz"
   end

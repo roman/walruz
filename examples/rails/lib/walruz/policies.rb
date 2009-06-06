@@ -11,6 +11,7 @@ module Policies
   
   autoload :AuthorPolicy,       'walruz/policies/author_policy'
   autoload :ColaborationPolicy, 'walruz/policies/colaboration_policy'
+  autoload :BlahPolicy, 'walruz/policies/blah_policy'
   
   # Then use it on your models:
   #
