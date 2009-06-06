@@ -6,6 +6,11 @@ describe Walruz::Policy do
     AuthorPolicy.should respond_to(:with_actor)
   end
   
+  it "should generate an indicator that the policy was executed after authorization queries" do
+    policy = Beatle::PAUL.can?(:sing, Song::YESTERDAY)
+    policy[:author_policy?].should be_true
+  end
+  
   describe "when using the #with_actor method" do
     
     before(:each) do

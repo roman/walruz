@@ -4,18 +4,18 @@ class WalruzPolicyGenerator < Rails::Generator::NamedBase
     record do |m|
       m.class_collisions "#{class_name}Policy"
       m.directory 'lib/walruz/policies'
-      m.template 'policy.rb', File.join('lib/walruz/policies', class_path, "#{file_name}_policy.rb")
+      m.template 'policy.rb', File.join('lib/walruz/policies', class_path, "#{file_name}.rb")
     
     
       if options[:test]
         # we generate the rSpec stub
         m.directory 'spec'
         m.directory 'spec/policies'
-        m.template 'policy_spec.rb', File.join("spec/policies", "#{file_name}_policy_spec.rb")
+        m.template 'policy_spec.rb', File.join("spec/policies", "#{file_name}_spec.rb")
       else
         m.directory 'test'
         m.directory 'test/policies'
-        m.template 'policy_test.rb', File.join("test/policies", "#{file_name}_policy_test.rb")
+        m.template 'policy_test.rb', File.join("test/policies", "#{file_name}_test.rb")
       end
     
     end

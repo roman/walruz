@@ -1,5 +1,5 @@
 module Policies
-  class <%= class_name %>Policy < Walruz::Policy
+  class <%= class_name %> < Walruz::Policy
     # depends_on OtherPolicy
     
     def authorized?(actor, subject)

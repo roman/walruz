@@ -3,10 +3,10 @@
 # in your spec_helper.rb file
 
 
-class Policies::<%= class_name %>PolicyTest < Test::Unit
+class Policies::<%= class_name %>Test < Test::Unit
   
   def setup
-    @policy = Policies::<%= class_name %>Policy.new
+    @policy = Policies::<%= class_name %>.new
   end
   
   def test_return_true_with_valid_association_of_actor_and_subject

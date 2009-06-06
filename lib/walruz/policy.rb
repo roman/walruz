@@ -70,6 +70,16 @@ module Walruz
       end
     end
     
+    # Utility method (copied from ActiveSupport)
+    # @private
+    def self.underscore(camel_cased_word)
+     camel_cased_word.to_s.gsub(/::/, '/').
+             gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
+             gsub(/([a-z\d])([A-Z])/,'\1_\2').
+             tr("-", "_").
+             downcase
+    end
+    
     
     #
     # Verifies if the actor is authorized to interact with the subject
@@ -86,7 +96,8 @@ module Walruz
     # @private
     def safe_authorized?(actor, subject)
       result = Array(authorized?(actor, subject))
-      result[1] = {} if result[1].nil?
+      result[1] ||= {}
+      result[1][:"#{self.class.underscore(self.class.name)}?"] = result[0]
       result
     end
     
