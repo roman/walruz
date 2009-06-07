@@ -73,11 +73,15 @@ module Walruz
     # Utility method (copied from ActiveSupport)
     # @private
     def self.underscore(camel_cased_word)
-     camel_cased_word.to_s.gsub(/::/, '/').
-             gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
-             gsub(/([a-z\d])([A-Z])/,'\1_\2').
-             tr("-", "_").
-             downcase
+      if camel_cased_word.empty?
+        camel_cased_word
+      else
+        camel_cased_word.to_s.split('::').last.
+                gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
+                gsub(/([a-z\d])([A-Z])/,'\1_\2').
+                tr("-", "_").
+                downcase
+      end
     end
     
     
