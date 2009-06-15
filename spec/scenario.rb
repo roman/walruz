@@ -13,7 +13,7 @@ class Beatle
   end
   
   def sing_the_song(song)
-    response = can?(:sing, song)
+    response = can!(:sing, song)
     case response[:owner]
     when Colaboration
       authors = response[:owner].authors.dup
@@ -26,7 +26,7 @@ class Beatle
   end
   
   def sing_with_john(song)
-    can?(:sing_with_john, song)
+    can!(:sing_with_john, song)
     "Ok John, Let's Play '%s'" % song.name
   end
 

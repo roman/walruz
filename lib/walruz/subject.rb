@@ -16,9 +16,7 @@ module Walruz
       end
     end
     
-    # 
-    # See Walruz::Actor.can?
-    #
+    # @private
     def can_be?(action, actor)
       check_authorization_actions_are_setted(action)
       action = if self.class._walruz_policies.key?(:default)
@@ -35,13 +33,8 @@ module Walruz
                           return_policy.
                           new.
                           safe_authorized?(actor, self)
-      if result[0]
-        result[1]
-      else
-        response_params = result[1]
-        error_message = response_params[:error_message] || "You are not authorized to access this content"
-        raise NotAuthorized.new(error_message) 
-      end
+      
+      result
     end
     
     # @private
