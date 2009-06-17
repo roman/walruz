@@ -2,7 +2,7 @@
 
 == Basic and Terminology
 
-Walruz facilitates the separation between the authorization process on the business logic, and the actions executed after the validation of the authorizations. To understand how it works, we will follow the following terminology:
+Walruz facilitates the separation between the authorization process on the business logic and the actions executed after the validation of the authorizations. To understand how it works, we will follow the following terminology:
 
   - Subject: Object that is going to be managed (Profile, Posts)
   - Actor: Entity that wants to perform an action on a subject (User, Admin)
@@ -27,6 +27,8 @@ Walruz provides modules and classes that helps on the implementation of the conc
 Subject classes may specify a set of actions that can be performed to them using the check_authorization method
 
   class ASubject
+    include Walruz::Subject
+    
     check_authorization :show => Policy1,
                         :edit => Policy2
   end
@@ -36,30 +38,35 @@ If there is just one policy to every possible action performed to the subject, y
 Example:
 
   class ASubject
+    include Walruz::Subject
+  
     check_authorization PolicyClazz
   end
 
 or
 
   class AnotherSubject
+    include Walruz::Subject
+  
     check_authorization :default => PolicyClazz
   end
   
 You can also specify other flags with the default flag.
 
-class ASubject
-  check_authorization :show => Policy1,
-                      :edit => Policy2,
-                      :default => DefaultPolicy
-end
+  class ASubject
+    include Walruz::Subject
 
+    check_authorization :show => Policy1,
+                        :edit => Policy2,
+                        :default => DefaultPolicy
+  end
 
 == Actors verify if they are able to perform an action on a subject
 
-Actor classes may use several methods to check if the actor can perform the given action on the subject. This are:
+Actor classes can use several methods to check if the actor instance can perform the given action on the subject. This are:
 
 - `can?(action, subject)`
-  Returns boolean that says if the actor can execute or not the action on the subject, if a block is given, this will be executed when the authorization is true, and a parameters hash from the policy is passed to the block.
+  Returns boolean that says if the actor can execute or not the action on the subject, if a block is given, this will be executed when the authorization is true, and a parameters hash from the policy will be passed to the block.
 
 - `can!(action, subject)`
   In case the actor can execute the action on the subject, it returns the parameters hash from the policy, otherwise it will raise a Walruz::NotAuthorized.
@@ -80,11 +87,11 @@ Examples:
   end
   
   policy_params = current_user.can!(:read, friends_profile)
-  # all the code executed bello will be executed when the actor is athorized
+  # all the code executed bellow will be executed when the actor is authorized
 
 == Implementing Policies
 
-To implement a Policy, is recommended (but not mandatory) that the Policy class inherits from the Walruz::Policy class. This class provides a method called `authorized?` that return either a Boolean, or an Array of two items, the first one being a Boolean, and the second being a Hash of parameters returned from the Policy.
+To implement a Policy, its necessary that the Policy class inherits from the Walruz::Policy class. This class provides a method called `authorized?` that return either a Boolean, or an Array of two items, the first one being a Boolean, and the second being a Hash of parameters returned from the Policy.
 
 Examples:
   
@@ -113,15 +120,15 @@ Examples:
 
 == Composing basic policies to create complex ones
 
-Sometimes policies can turn really messy, specially when you have a complex business model. The good news is that, normally this complex policies are a composition of more simple policies (eg. UserCanSeePictures). Instead of creating this new classes that replicates the same logic of basic policies, we could merge them together in the following way:
+Sometimes policies can turn really messy, specially when you have a complex business model. The good news is that, normally this complex policies are a composition of more simple policies (eg. ActorCanSeeUserPictures). Instead of creating this new classes that replicates the same logic of basic policies, we could merge them together in the following way:
 
-ActorCanSeePictures = Walruz::Utils.andP(UserIsFriend, UserAllowsDisclosureOfPictures)
+ActorCanSeeUserPictures = Walruz::Utils.andP(UserIsFriend, UserAllowsDisclosureOfPictures)
 
 There is also the utility methods `orP` and `notP`, to create combinations of policies. 
 
 If your policy returns a parameters hash, and you are using the `andP` method, the parameters will be merged on each policy invocation, if you are using the `orP` method, the parameters of the first policy that returns true will be returned.
 
-One other thing that the utility methods do for you is leave their track on the returned policy parameters, when you invoke a composite policy, every policy will leave a symbol with the name of the policy underscored and a question mark at the end, that way you can know which policies were successful or not. 
+One other thing that the utility methods do for you is leave its track on the returned policy parameters, when you invoke a composite policy, every policy will leave a symbol with the name of the policy underscored and a question mark at the end, that way you can know which policies were successful or not. 
 
 Example:
   
@@ -136,6 +143,8 @@ Example:
   UserReadPolicy = orP(ActorIsSubject, ActorIsAdmin)
   
   class User < AbstractORM
+    include Walruz::Subject
+    
     check_authorizations :read => UserReadPolicy
   end
   
@@ -151,7 +160,7 @@ Example:
 
 == Dependencies between Policies
 
-Sometimes you would like to have a Policy that strictly depends in other ones, on the previous example `UserAllowsDisclosureOfPictures` could have a dependency that says that only the User allows the disclosure of pictures if and only if there is a friends relationship, so we could re-implement this policy as:
+Sometimes you would like to have a Policy that strictly depends in other ones, on the previous example `UserAllowsDisclosureOfPictures` could have a dependency that says that only the User allows the disclosure of pictures if and only if there is a friend relationship, so we could re-implement this policy as:
 
 Example:
 
@@ -175,7 +184,7 @@ Example:
   
 == Policy combinators, Lifting to the rescue! 
 
-Somtimes you would like to execute policies that are not directly related to a subject, but to the association of a subject. Given the example above of the friendship relationship and the disclosure of pictures, sometimes you would like to check if a user can see a picture directly on the picture model.
+Sometimes you would like to execute policies that are not directly related to a subject, but to the association of a subject. Given the example above of the friendship relationship and the disclosure of pictures, sometimes you would like to check if a user can see a picture directly on the picture model.
 
 Suppose we have the following model in our system:
 
@@ -204,16 +213,17 @@ But as you may see, we are just creating new policies to handle old ones, we are
   PictureReadPolicy = lift_subject(:owner, UserAllowsDisclosureOfPictures)
   
   class Picture < AbstractORM
+    include Walruz::Subject
     belongs_to :owner
     
     check_authorizations :read => PictureReadPolicy
   end
   
-The first parameter of `lift_subject` is the name of the method that returns a new subject, this new subject is then passed through the policy specified on the second parameter and then executes the Policy. Pretty neat eh?
+The first parameter of `lift_subject` is the name of the method that will return a new subject, this new subject is then passed through the policy specified on the second parameter and then executes the Policy checking. Pretty neat eh?
 
 == Returning custom errors
 
-Suppose you want to add an error to the authorization failure to have a more descriptive message, you can do so on the `authorized?` method passing a hash with a :error_message key on the false return. If you use the `can!` method on the actor model, this will become the `Walruz::NotAuthorized` error message.
+Suppose you want to add an error to the authorization failure that is a more descriptive, you can do so on the `authorized?` method passing a hash with a :error_message key on the false return. If you use the `can!` method on the actor model, this will become the `Walruz::NotAuthorized` error message.
 
 Example:
   
