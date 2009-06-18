@@ -250,19 +250,9 @@ You'll notice that once you start implementing policies for your system, you'll 
 
 If you follow this rules, it will be much easier for you to merge policies together in an efficient way.
 
-== Setup on Rails
+== Rails Integration
 
-This gem is ready to get going with any Rails 2.x project, you just have to run the generator:
-
-  $ script/generate walruz
-  
-This will generate the policies structure on the lib/ folder, and also it will add an initializer that setups your models for Walruz (config/initializers/walruz_intializer.rb).
-
-If you want to generate new policies, you may do so executing:
-
-  $ script/generate walruz_policy policy_name
-  
-This will generate a new policy skeleton on your lib/walruz/policies folder
+See the "walruz-rails":http://github.com/noomii/walruz-rails gem
 
 == More examples
 
