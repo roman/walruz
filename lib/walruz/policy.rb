@@ -97,11 +97,22 @@ module Walruz
       raise NotImplementedError.new("You need to implement policy")
     end
     
+    #
+    # Returns the identifier of the Policy that will be setted on the 
+    # policy params hash once the authorization is executed. 
+    # 
+    # Returns:
+    # By default it will return a symbol with the name of the Policy class with an '?' appended
+    #
+    def policy_keyword
+      :"#{self.class.underscore(self.class.name)}?"
+    end
+    
     # @private
     def safe_authorized?(actor, subject)
       result = Array(authorized?(actor, subject))
       result[1] ||= {}
-      result[1][:"#{self.class.underscore(self.class.name)}?"] = result[0]
+      result[1][policy_keyword] = result[0]
       result
     end
     
