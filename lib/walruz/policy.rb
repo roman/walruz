@@ -104,15 +104,15 @@ module Walruz
     # Returns:
     # By default it will return a symbol with the name of the Policy class with an '?' appended
     #
-    def policy_keyword
-      :"#{self.class.underscore(self.class.name)}?"
+    def self.policy_keyword
+      self.name.empty? ? nil : :"#{self.underscore(self.name)}?"
     end
     
     # @private
     def safe_authorized?(actor, subject)
       result = Array(authorized?(actor, subject))
       result[1] ||= {}
-      result[1][policy_keyword] = result[0]
+      result[1][self.class.policy_keyword] = result[0] unless self.class.policy_keyword.nil?
       result
     end
     

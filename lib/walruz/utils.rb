@@ -67,6 +67,10 @@ module Walruz
           acum[0] ? acum : acum[0]
         end
         
+        def self.policy_keyword
+          (self.policies.map { |p| p.policy_keyword.to_s[0..-2] }.join('_and_') + "?").to_sym
+        end
+        
       end
       clazz.policies = policies
       clazz
@@ -79,6 +83,11 @@ module Walruz
         def authorized?(actor, subject)
           result = self.class.policy.new.safe_authorized?(actor, subject)
           !result[0]
+        end
+        
+        def self.policy_keyword
+          keyword = self.policy.policy_keyword.to_s[0..-2]
+          :"not(#{keyword})?"
         end
         
       end
