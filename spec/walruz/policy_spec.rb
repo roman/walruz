@@ -11,6 +11,16 @@ describe Walruz::Policy do
     policy[:author_policy?].should be_true
   end
   
+  it "should have a default label" do
+    AuthorPolicy.policy_label.should == :author_policy
+  end
+  
+  it "should prioritize a label that is setted over the default one" do
+    AuthorPolicy.set_policy_label :is_author
+    AuthorPolicy.policy_label.should == :is_author
+    AuthorPolicy.set_policy_label(nil)
+  end
+  
   it "should raise an Walruz::ActionNotFound exception when the action is not specified, and there is no default one"  do
     lambda do
       Beatle::RINGO.can!(:sing_drunk, Song::TAXMAN)
@@ -31,8 +41,8 @@ describe Walruz::Policy do
       
       
       john_and_paul_songs = @songs.select(&AuthorInColaborationPolicy.with_actor(Beatle::JOHN))
-      john_and_paul_songs.should have(2).songs
-      john_and_paul_songs.should == [Song::A_DAY_IN_LIFE, Song::YELLOW_SUBMARINE]
+      john_and_paul_songs.should have(3).songs
+      john_and_paul_songs.should == [Song::A_DAY_IN_LIFE, Song::YELLOW_SUBMARINE, Song::TAXMAN]
     end
     
   end

@@ -59,14 +59,24 @@ describe 'Walruz::Actor' do
   
   describe '#satisfies?' do
     
+    it "should work with the symbol representation of the policy" do
+      Beatle::PAUL.satisfies?(:colaborating_with_john_policy, Song::TAXMAN).should be_false
+    end
+    
     it "should check only the specified policy" do
-      Beatle::PAUL.satisfies?(ColaboratingWithJohnPolicy, Song::TAXMAN).should be_false
+      Beatle::PAUL.satisfies?(:colaborating_with_john_policy, Song::TAXMAN).should be_false
+    end
+    
+    it "should raise a Walruz::ActionNotFound error if the policy is not found" do
+      lambda do
+        Beatle::GEORGE.satisfies?(:unknown_policy, Song::TAXMAN)
+      end.should raise_error(Walruz::ActionNotFound)
     end
     
     it "should execute the block if the condition is true" do
-      proc_called = lambda { raise "Is being called" }
+      proc_called = Proc.new { raise "Is being called" }
       lambda do
-        Beatle::GEORGE.satisfies?(ColaborationWithJohnPolicy, Song::TAXMAN, &proc_called)
+        Beatle::GEORGE.satisfies?(:colaborating_with_john_policy, Song::TAXMAN, &proc_called)
       end.should raise_error
     end
     
@@ -76,7 +86,7 @@ describe 'Walruz::Actor' do
         params.should be_kind_of(Hash)
         params[:author_in_colaboration_policy?].should be_true
       end
-      Beatle::GEORGE.satisfies?(ColaboratingWithJohnPolicy, Song::TAXMAN, &proc_called)
+      Beatle::GEORGE.satisfies?(:colaborating_with_john_policy, Song::TAXMAN, &proc_called)
     end
     
   end

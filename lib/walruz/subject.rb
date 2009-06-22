@@ -25,7 +25,7 @@ module Walruz
                 if self.class._walruz_policies.key?(action) 
                   action
                 else 
-                  raise ActionNotFound.new(self, action)
+                  raise ActionNotFound.new(:subject_action, :subject => self, :action => action)
                 end
               end
       

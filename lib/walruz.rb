@@ -8,6 +8,19 @@ module Walruz
   
   class ActionNotFound < Exception
     
+    def initialize(failure, params = {})
+      case failure
+      when :subject_action
+        super("%s class doesn't have an authorization action called :%s nor a :default policy" % [params[:subject].class.name, params[:action]])
+      when :policy_label
+        super("There is no Policy with the label %s" % params[:label])
+      end
+    end
+    
+    def initialize(label)
+      super("There is no Policy with the label #{label.inspect}")
+    end
+    
     def initialize(subject, flag)
       super("%s class doesn't have an authorization action called :%s nor a :default policy" % [subject.class.name, flag])
     end
@@ -23,6 +36,10 @@ module Walruz
   def self.setup
     config = Config.new
     yield config
+  end
+  
+  def self.policies
+    Walruz::Policy.policies
   end
   
   class Config

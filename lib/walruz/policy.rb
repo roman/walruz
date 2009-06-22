@@ -11,6 +11,21 @@ module Walruz
     
     attr_reader :params
     
+    # @private
+    def self.inherited(child)
+      @policies ||= {}
+      unless child.policy_label.nil?
+        @policies[child.policy_label] = child
+      end
+    end
+    
+    #
+    # See Walruz.policies
+    #
+    def self.policies
+      @policies || {}
+    end
+    
     #
     # Returns a Proc with a curried actor, making it easier
     # to perform validations of a policy in an Array of subjects
@@ -102,10 +117,30 @@ module Walruz
     # policy params hash once the authorization is executed. 
     # 
     # Returns:
-    # By default it will return a symbol with the name of the Policy class with an '?' appended
+    # By default it will return a symbol with the name of the Policy class in underscore (unless the policy label
+    # was setted, in that case the policy label will be used) with an '?' appended
     #
     def self.policy_keyword
-      self.name.empty? ? nil : :"#{self.underscore(self.name)}?"
+      if self.policy_label.nil?
+        nil
+      else
+        :"#{self.policy_label}?"
+      end
+      
+    end
+    
+    def self.policy_label
+      @policy_label ||= (self.name.empty? ? nil : :"#{self.underscore(self.name)}")
+    end
+    
+    #
+    # Sets the identifier of the Policy for using on the `satisfies?` method
+    #
+    # Parameters:
+    #   - label: Symbol that represents the policy
+    # 
+    def self.set_policy_label(label)
+      @policy_label = label
     end
     
     # @private

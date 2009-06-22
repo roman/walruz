@@ -62,7 +62,7 @@ module Walruz
     # Allows an actor to check if he the given policy applies to him and the given subject.
     # 
     # Params:
-    #   - policy: Policy class the actor wants to check
+    #   - policy: label of the Policy the actor wants to check
     #   - subject: The subject which the actor wants to interact with
     #
     # block |policy_hash|: 
@@ -73,7 +73,9 @@ module Walruz
     #   It returns a boolean indicating that the actor is authorized to 
     #   access (or not) the subject with the given Policy.
     #
-    def satisfies?(policy_clz, subject, &block)
+    def satisfies?(policy_label, subject, &block)
+      policy_clz = Walruz.policies[policy_label]
+      raise ActionNotFound.new(:policy_label, :label => policy_label) if policy_clz.nil?
       result = policy_clz.return_policy.new.safe_authorized?(self, subject)
       if result[0]
         block.call(result[1]) if block_given?

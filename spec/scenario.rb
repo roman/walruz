@@ -52,7 +52,7 @@ class Colaboration
   
   JOHN_PAUL = self.new(Beatle::JOHN, Beatle::PAUL)
   JOHN_PAUL_GEORGE = self.new(Beatle::JOHN, Beatle::PAUL, Beatle::GEORGE)
-  JOHN_GEORGE = self.new(Beatle::PAUL, Beatle::GEORGE)
+  JOHN_GEORGE = self.new(Beatle::JOHN, Beatle::GEORGE)
 end
 
 class SubjectIsActorPolicy < Walruz::Policy
