@@ -17,14 +17,6 @@ module Walruz
       end
     end
     
-    def initialize(label)
-      super("There is no Policy with the label #{label.inspect}")
-    end
-    
-    def initialize(subject, flag)
-      super("%s class doesn't have an authorization action called :%s nor a :default policy" % [subject.class.name, flag])
-    end
-    
   end
   
   base_path = File.dirname(__FILE__)
