@@ -15,20 +15,36 @@ module Walruz
     #   - label: The label of the action
     #   - subject: The subject which the actor wants to interact with
     #
-    # block |policy_hash|: 
-    #   If the actor can access the subject, then the block will be executed;
-    #   this will receive the policy hash as a parameter.
-    #
     # Returns:
     #   It returns a boolean indicating that the actor is authorized to 
     #   access (or not) the subject
     #
-    def can?(label, subject, &block)
-      result = subject.can_be?(label, self)
-      if result[0]
-        block.call(result[1]) if block_given?
+    # Notes:
+    #   Because this method is probably going to be called multiple times on
+    #   a same action, the result of the first invocation is cached, if you 
+    #   want to uncache just pass true as a third parameter.
+    #   
+    # 
+    def can?(*args)
+      if args.size == 2
+        cached_values_for_can[args] ||= can_without_caching?(*args)
+      elsif args.size == 3 
+        if args.pop
+          cached_values_for_can[args] = can_without_caching?(*args)
+        else
+          cached_values_for_can[args] ||= can_without_caching?(*args)
+        end
+      else
+        raise ArgumentError.new("wrong number of arguments (%d for 2)" % args.size) 
       end
-      result[0]
+    end
+    
+    def can_without_caching?(label, subject)
+      subject.can_be?(label, self)[0]
+    end
+    
+    def cached_values_for_can
+      @_cached_values_for_can ||= {}
     end
     
     #
@@ -50,6 +66,7 @@ module Walruz
     def can!(label, subject)
       result = subject.can_be?(label, self)
       if result[0]
+        cached_values_for_can[[label, subject]] = result[0]
         result[1]
       else
         response_params = result[1]

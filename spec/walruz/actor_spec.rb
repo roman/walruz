@@ -38,11 +38,40 @@ describe 'Walruz::Actor' do
   
   describe '#can?' do
     
-    it "should execute a given block if the condition is true" do
-      proc_called = lambda { raise "Is being called" }
+    it "should be invoked only the first time and then return a cached solution" do
+      Song::ALL_YOU_NEED_IS_LOVE.should_receive(:can_be?).once.and_return([true, {}])
+      Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE)
+      Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE)
+    end
+    
+    # @deprecated functionality
+    # WHY: When you execute `can?` you should probably have already executed `can!`
+    # it "should execute a given block if the condition is true" do
+    #   proc_called = lambda { raise "Is being called" }
+    #   lambda do
+    #     Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE, &proc_called)
+    #   end.should raise_error
+    # end
+    
+    it "if a boolean third parameter is received it should not use the cached result" do
+      Beatle::JOHN.stub!(:can_without_caching?).and_return(true)
+      Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE).should be_true
+      
+      Beatle::JOHN.stub!(:can_without_caching?).and_return(false)
+      Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE).should be_true
+      Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE, true).should be_false
+    end
+    
+    it "should receive at least 2 parameters" do
       lambda do
-        Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE, &proc_called)
-      end.should raise_error
+        Beatle::JOHN.can?(:sing)
+      end.should raise_error(ArgumentError)
+    end
+    
+    it "should receive at most 3 parameters" do
+      lambda do
+        Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE, true, false)
+      end.should raise_error(ArgumentError)
     end
     
     
