@@ -32,10 +32,12 @@ module Walruz
       
     end
     
-    def orP(*policies)
+    def any(*policies)
+      # :nodoc:
       clazz = Class.new(Walruz::Policy) do
         extend PolicyCompositionHelper
         
+        # :nodoc:
         def authorized?(actor, subject)
           result = nil
           self.class.policies.detect do |policy|
@@ -50,10 +52,12 @@ module Walruz
       clazz
     end
     
-    def andP(*policies)
+    def all(*policies)
+      # :nodoc:
       clazz = Class.new(Walruz::Policy) do
         extend PolicyCompositionHelper
         
+        # :nodoc:
         def authorized?(actor, subject)
           acum = [true, {}]
           self.class.policies.each do |policy|
@@ -67,6 +71,7 @@ module Walruz
           acum[0] ? acum : acum[0]
         end
         
+        # :nodoc:
         def self.policy_keyword
           (self.policies.map { |p| p.policy_keyword.to_s[0..-2] }.join('_and_') + "?").to_sym
         end
@@ -76,15 +81,18 @@ module Walruz
       clazz
     end
     
-    def notP(policy)
+    def negate(policy)
+      # :nodoc:
       clazz = Class.new(Walruz::Policy) do
         extend PolicyCompositionHelper
         
+        # :nodoc:
         def authorized?(actor, subject)
           result = self.class.policy.new.safe_authorized?(actor, subject)
           !result[0]
         end
         
+        # :nodoc:
         def self.policy_keyword
           keyword = self.policy.policy_keyword.to_s[0..-2]
           :"not(#{keyword})?"
@@ -95,25 +103,7 @@ module Walruz
       clazz
     end
     
-    def lift_subject(key, policy, &block)
-      clazz = Class.new(Walruz::Policy) do
-        extend PolicyCompositionHelper
-        
-        def authorized?(actor, subject)
-          params = self.class.params
-          new_subject = subject.send(params[:key])
-          result = self.class.policy.new.safe_authorized?(actor, new_subject)
-          params[:callback].call(result[0], result[1], actor, subject) if params[:callback]
-          result
-        end
-        
-      end
-      clazz.policy = policy
-      clazz.set_params(:key => key, :callback => block)
-      clazz
-    end
-    
-    module_function(:orP, :andP, :notP, :lift_subject)
+    module_function(:any, :all, :negate)
     
   end
 end

@@ -5,9 +5,9 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "walruz"
-    gem.summary = %Q{TODO}
+    gem.summary = %Q{Walruz is a gem that provides an easy but powerful way to implement authorization policies in a system, relying on the composition of simple policies to create more complex ones.}
     gem.email = "roman@noomi.com"
-    gem.homepage = "http://github.com/roman/walruz"
+    gem.homepage = "http://github.com/noomii/walruz"
     gem.authors = ["Roman Gonzalez"]
     gem.rubyforge_project = "walruz"
   

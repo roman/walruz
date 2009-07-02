@@ -17,6 +17,7 @@ module Walruz
     end
     
     # @private
+    # :nodoc:
     def can_be?(action, actor)
       check_authorization_actions_are_setted(action)
       action = if self.class._walruz_policies.key?(:default)
@@ -39,6 +40,7 @@ module Walruz
     end
     
     # @private
+    # :nodoc:
     def check_authorization_actions_are_setted(action)
       if self.class._walruz_policies.nil?
         message =<<BEGIN

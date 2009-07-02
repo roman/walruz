@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{walruz}
-  s.version = "0.0.3"
+  s.version = "0.0.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Roman Gonzalez"]
-  s.date = %q{2009-06-18}
+  s.date = %q{2009-07-02}
   s.email = %q{roman@noomi.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -28,21 +28,23 @@ Gem::Specification.new do |s|
     "spec/walruz/actor_spec.rb",
     "spec/walruz/policy_spec.rb",
     "spec/walruz/subject_spec.rb",
-    "spec/walruz/utils_spec.rb"
+    "spec/walruz/utils_spec.rb",
+    "spec/walruz/walruz_spec.rb"
   ]
   s.homepage = %q{http://github.com/noomii/walruz}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{walruz}
   s.rubygems_version = %q{1.3.3}
-  s.summary = %q{Simple but Powerful Authorization Framework}
+  s.summary = %q{Walruz is a gem that provides an easy but powerful way to implement authorization policies in a system, relying on the composition of simple policies to create more complex ones.}
   s.test_files = [
     "spec/scenario.rb",
     "spec/spec_helper.rb",
     "spec/walruz/actor_spec.rb",
     "spec/walruz/policy_spec.rb",
     "spec/walruz/subject_spec.rb",
-    "spec/walruz/utils_spec.rb"
+    "spec/walruz/utils_spec.rb",
+    "spec/walruz/walruz_spec.rb"
   ]
 
   if s.respond_to? :specification_version then

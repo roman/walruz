@@ -13,7 +13,7 @@ class Beatle
   end
   
   def sing_the_song(song)
-    response = can!(:sing, song)
+    response = authorize(:sing, song)
     case response[:owner]
     when Colaboration
       authors = response[:owner].authors.dup
@@ -26,7 +26,7 @@ class Beatle
   end
   
   def sing_with_john(song)
-    can!(:sing_with_john, song)
+    authorize(:sing_with_john, song)
     "Ok John, Let's Play '%s'" % song.name
   end
 
@@ -75,7 +75,7 @@ end
 #   
 # end
 
-AuthorPolicy = Walruz::Utils.lift_subject(:author, SubjectIsActorPolicy) do |authorized, params, actor, subject|
+AuthorPolicy = SubjectIsActorPolicy.for_subject(:author) do |authorized, params, actor, subject|
   params.merge!(:owner => actor) if authorized
 end
 
@@ -105,8 +105,8 @@ class Song
   include Walruz::Subject
   extend Walruz::Utils
 
-  check_authorizations :sing => orP(AuthorPolicy, AuthorInColaborationPolicy),
-                       :sell => andP(AuthorPolicy, notP(AuthorInColaborationPolicy)),
+  check_authorizations :sing => any(AuthorPolicy, AuthorInColaborationPolicy),
+                       :sell => all(AuthorPolicy, negate(AuthorInColaborationPolicy)),
                        :sing_with_john => ColaboratingWithJohnPolicy
   attr_accessor :name
   attr_accessor :colaboration

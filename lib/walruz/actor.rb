@@ -63,7 +63,7 @@ module Walruz
     # Raises: 
     #   Walruz::NotAuthorized error if the actor can't interact with the subject
     #    
-    def can!(label, subject)
+    def authorize(label, subject)
       result = subject.can_be?(label, self)
       if result[0]
         cached_values_for_can[[label, subject]] = result[0]

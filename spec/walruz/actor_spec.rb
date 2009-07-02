@@ -2,8 +2,8 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe 'Walruz::Actor' do
   
-  it "should add an instance method `can!` to included classes" do
-    Beatle::JOHN.should respond_to(:can!)
+  it "should add an instance method `authorize` to included classes" do
+    Beatle::JOHN.should respond_to(:authorize)
   end
   
   it "should add an instance method `can?` to included classes" do
@@ -15,7 +15,7 @@ describe 'Walruz::Actor' do
   end
   
   
-  describe "can!" do
+  describe "#authorize" do
     
     it "should raise a Walruz::NotAuthorized error when the actor is not authorized" do
       lambda do
@@ -45,7 +45,7 @@ describe 'Walruz::Actor' do
     end
     
     # @deprecated functionality
-    # WHY: When you execute `can?` you should probably have already executed `can!`
+    # WHY: When you execute `can?` you should probably have already executed `authorize`
     # it "should execute a given block if the condition is true" do
     #   proc_called = lambda { raise "Is being called" }
     #   lambda do

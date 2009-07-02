@@ -12,6 +12,7 @@ module Walruz
     attr_reader :params
     
     # @private
+    # :nodoc:
     def self.inherited(child)
       @policies ||= {}
       unless child.policy_label.nil?
@@ -20,10 +21,35 @@ module Walruz
     end
     
     #
-    # See Walruz.policies
+    # See +Walruz.policies+.
     #
     def self.policies
       @policies || {}
+    end
+    
+    # Creates a new policy class based on an existing one, this method is used 
+    # when you want to reuse a Policy class for a subject association
+    # 
+    # See the "Policy Combinators" section on the README for more info
+    #
+    def self.for_subject(key, &block)
+      # :nodoc:
+      clazz = Class.new(Walruz::Policy) do
+        extend Walruz::Utils::PolicyCompositionHelper
+        
+        # :nodoc:
+        def authorized?(actor, subject)
+          params = self.class.params
+          new_subject = subject.send(params[:key])
+          result = self.class.policy.new.safe_authorized?(actor, new_subject)
+          params[:callback].call(result[0], result[1], actor, subject) if params[:callback]
+          result
+        end
+        
+      end
+      clazz.policy = self
+      clazz.set_params(:key => key, :callback => block)
+      clazz
     end
     
     #
@@ -65,28 +91,32 @@ module Walruz
     
     # Utility for depends_on macro
     # @private
+    # :nodoc:
     def self.policy_dependencies=(dependencies)
       @_policy_dependencies = dependencies
     end
     
     # Utility for depends_on macro
     # @private
+    # :nodoc:
     def self.policy_dependencies
       @_policy_dependencies
     end
     
     # Utility for depends_on macro
     # @private
+    # :nodoc:
     def self.return_policy
       if policy_dependencies.nil?
         self
       else
-        andP(*policy_dependencies)
+        all(*policy_dependencies)
       end
     end
     
     # Utility method (copied from ActiveSupport)
     # @private
+    # :nodoc:
     def self.underscore(camel_cased_word)
       if camel_cased_word.empty?
         camel_cased_word
@@ -129,6 +159,9 @@ module Walruz
       
     end
     
+    #
+    # Returns the label assigned to the policy
+    #
     def self.policy_label
       @policy_label ||= (self.name.empty? ? nil : :"#{self.underscore(self.name)}")
     end
@@ -144,6 +177,7 @@ module Walruz
     end
     
     # @private
+    # :nodoc:
     def safe_authorized?(actor, subject)
       result = Array(authorized?(actor, subject))
       result[1] ||= {}
@@ -152,6 +186,7 @@ module Walruz
     end
     
     # @private
+    # :nodoc:
     def set_params(params)
       @params = params
     end    

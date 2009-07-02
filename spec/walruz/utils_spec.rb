@@ -4,17 +4,17 @@ describe Walruz::Utils do
   
   def check_actor_can_on_subject(label, actor, subject)
     lambda do
-      actor.can!(label, subject)
+      actor.authorize(label, subject)
     end.should_not raise_error(Walruz::NotAuthorized)
   end
   
   def check_actor_can_not_on_subject(label, actor, subject)
     lambda do
-      actor.can!(label, subject)
+      actor.authorize(label, subject)
     end.should raise_error(Walruz::NotAuthorized)
   end
   
-  describe "when using combinators `orP`, `andP` or `notP`" do
+  describe "when using combinators `any`, `all` or `negate`" do
     
     it "should work properly" do
       check_actor_can_not_on_subject(:sell, Beatle::JOHN, Song::A_DAY_IN_LIFE)
@@ -23,7 +23,7 @@ describe Walruz::Utils do
     
   end
   
-  describe "when using andP" do
+  describe "#all" do
 
     it "should return as policy keyword, the name of the original policies keywords concatenated with `_and_`" do
       Beatle::JOHN.can?(:sell, Song::ALL_YOU_NEED_IS_LOVE) do |policy_params|
@@ -33,7 +33,7 @@ describe Walruz::Utils do
     
   end
   
-  describe "when using notP" do
+  describe "#negate" do
     
     it "should return as policy keyword, the name of the original policy keyword with a `not()` around" do
       Beatle::JOHN.can?(:sell, Song::ALL_YOU_NEED_IS_LOVE) do |policy_params|

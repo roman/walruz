@@ -7,7 +7,7 @@ describe Walruz::Policy do
   end
   
   it "should generate an indicator that the policy was executed after authorization queries" do
-    policy = Beatle::PAUL.can!(:sing, Song::YESTERDAY)
+    policy = Beatle::PAUL.authorize(:sing, Song::YESTERDAY)
     policy[:author_policy?].should be_true
   end
   
@@ -23,7 +23,7 @@ describe Walruz::Policy do
   
   it "should raise an Walruz::ActionNotFound exception when the action is not specified, and there is no default one"  do
     lambda do
-      Beatle::RINGO.can!(:sing_drunk, Song::TAXMAN)
+      Beatle::RINGO.authorize(:sing_drunk, Song::TAXMAN)
     end.should raise_error(Walruz::ActionNotFound)
   end
   
