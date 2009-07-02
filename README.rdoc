@@ -262,7 +262,7 @@ If you follow this rules, it will be much easier for you to merge policies toget
 
 == Rails Integration
 
-See the "walruz-rails":http://github.com/noomii/walruz-rails gem
+See "walruz-rails":http://walruz-rails.rubyforge.com gem
 
 == More examples
 
