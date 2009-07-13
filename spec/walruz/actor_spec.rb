@@ -6,6 +6,10 @@ describe 'Walruz::Actor' do
     Beatle::JOHN.should respond_to(:authorize)
   end
   
+  it "should add an instance method `authorize!` to included classes" do
+    Beatle::JOHN.should respond_to(:authorize!)
+  end
+  
   it "should add an instance method `can?` to included classes" do
     Beatle::JOHN.should respond_to(:can?)
   end
@@ -17,10 +21,35 @@ describe 'Walruz::Actor' do
   
   describe "#authorize" do
     
+    it "should return nil when the actor is not authorized" do
+      Beatle::RINGO.authorize(:sing, Song::ALL_YOU_NEED_IS_LOVE).should be_nil
+    end
+    
+    it "should return the policy parameters when the actor is authorized" do
+      result = Beatle::JOHN.authorize(:sing, Song::ALL_YOU_NEED_IS_LOVE)
+      result.should_not be_nil
+      result.should be_kind_of(Hash)
+      result[:owner].should == Beatle::JOHN
+    end
+    
+  end
+  
+  describe "#authorize!" do
+    
     it "should raise a Walruz::NotAuthorized error when the actor is not authorized" do
       lambda do
         Beatle::RINGO.sing_the_song(Song::ALL_YOU_NEED_IS_LOVE)
       end.should raise_error(Walruz::NotAuthorized)
+    end
+    
+    it "should raise a Walruz::NotAuthorized error with the information of actor, subject and action when actor is not authorized" do
+      begin
+        Beatle::RINGO.sing_the_song(Song::ALL_YOU_NEED_IS_LOVE)
+      rescue Walruz::NotAuthorized => e
+        e.actor.should == Beatle::RINGO
+        e.subject.should == Song::ALL_YOU_NEED_IS_LOVE
+        e.action == :sing
+      end
     end
     
     it "should not raise a Walruz::NotAuthorized error when the actor is authorized" do
@@ -44,20 +73,11 @@ describe 'Walruz::Actor' do
       Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE)
     end
     
-    # @deprecated functionality
-    # WHY: When you execute `can?` you should probably have already executed `authorize`
-    # it "should execute a given block if the condition is true" do
-    #   proc_called = lambda { raise "Is being called" }
-    #   lambda do
-    #     Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE, &proc_called)
-    #   end.should raise_error
-    # end
-    
     it "if a boolean third parameter is received it should not use the cached result" do
-      Beatle::JOHN.stub!(:can_without_caching?).and_return(true)
+      Beatle::JOHN.stub!(:can_without_caching).and_return([true, {}])
       Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE).should be_true
       
-      Beatle::JOHN.stub!(:can_without_caching?).and_return(false)
+      Beatle::JOHN.stub!(:can_without_caching).and_return([false, {}])
       Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE).should be_true
       Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE, true).should be_false
     end

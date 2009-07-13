@@ -4,13 +4,13 @@ describe Walruz::Utils do
   
   def check_actor_can_on_subject(label, actor, subject)
     lambda do
-      actor.authorize(label, subject)
+      actor.authorize!(label, subject)
     end.should_not raise_error(Walruz::NotAuthorized)
   end
   
   def check_actor_can_not_on_subject(label, actor, subject)
     lambda do
-      actor.authorize(label, subject)
+      actor.authorize!(label, subject)
     end.should raise_error(Walruz::NotAuthorized)
   end
   

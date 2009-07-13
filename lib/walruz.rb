@@ -1,6 +1,23 @@
 module Walruz
 
   class NotAuthorized < Exception
+    
+    attr_reader :actor
+    attr_reader :subject
+    attr_reader :action
+    
+    def initialize(actor, subject, action, error_message = nil)
+      @actor   = actor
+      @subject = subject
+      @action  = action
+      
+      if error_message.nil?
+        super
+      else
+        super(error_message)
+      end
+    end
+    
   end
   
   class AuthorizationActionsNotDefined < Exception
