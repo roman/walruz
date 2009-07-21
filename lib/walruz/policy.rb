@@ -9,8 +9,6 @@ module Walruz
   class Policy
     extend Walruz::Utils
     
-    attr_reader :params
-    
     # @private
     # :nodoc:
     def self.inherited(child)
@@ -189,7 +187,12 @@ module Walruz
     # :nodoc:
     def set_params(params)
       @params = params
-    end    
+      self
+    end
+    
+    def params
+      @params ||= {}
+    end
     
   end
 end

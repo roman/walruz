@@ -41,7 +41,7 @@ module Walruz
         def authorized?(actor, subject)
           result = nil
           self.class.policies.detect do |policy|
-            result = policy.new.safe_authorized?(actor, subject)
+            result = policy.new.set_params(params).safe_authorized?(actor, subject)
             result[0]
           end
           result[0] ? result : result[0]
@@ -59,12 +59,10 @@ module Walruz
         
         # :nodoc:
         def authorized?(actor, subject)
-          acum = [true, {}]
+          acum = [true, self.params || {}]
           self.class.policies.each do |policy|
             break unless acum[0]
-            policy_instance = policy.new
-            policy_instance.set_params(acum[1])
-            result = policy_instance.safe_authorized?(actor, subject)
+            result = policy.new.set_params(acum[1]).safe_authorized?(actor, subject)
             acum[0] &&= result[0]
             acum[1].merge!(result[1])
           end
@@ -88,6 +86,7 @@ module Walruz
         
         # :nodoc:
         def authorized?(actor, subject)
+          self.class.policy.set_params(params)
           result = self.class.policy.new.safe_authorized?(actor, subject)
           !result[0]
         end
