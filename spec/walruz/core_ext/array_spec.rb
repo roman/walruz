@@ -2,11 +2,11 @@ require File.dirname(__FILE__) + "/../../spec_helper"
 
 describe Walruz::CoreExt::Array do
   
-  it "should add an 'only_authorized' method" do
-    [].should respond_to(:only_authorized)
+  it "should add an 'only_authorized_for' method" do
+    [].should respond_to(:only_authorized_for)
   end
   
-  describe "#only_authorized" do
+  describe "#only_authorized_for" do
     
     before(:each) do
       @songs = [
@@ -24,17 +24,17 @@ describe Walruz::CoreExt::Array do
       shared_examples_for "only_authorized with action as a parameter expectations" do
         
         it "should remove the elements that are not authorized" do
-          @songs.only_authorized(Beatle::JOHN, @options).should == [
+          @songs.only_authorized_for(Beatle::JOHN, @options).should == [
                                                                  Song::A_DAY_IN_LIFE, 
                                                                  Song::YELLOW_SUBMARINE, 
                                                                  Song::TAXMAN, 
                                                                  Song::ALL_YOU_NEED_IS_LOVE]
-          @songs.only_authorized(Beatle::PAUL, @options).should == [
+          @songs.only_authorized_for(Beatle::PAUL, @options).should == [
                                                                  Song::A_DAY_IN_LIFE,
                                                                  Song::YELLOW_SUBMARINE,
                                                                  Song::YESTERDAY]
-          @songs.only_authorized(Beatle::GEORGE, @options).should == [Song::TAXMAN, Song::BLUE_JAY_WAY]
-          @songs.only_authorized(Beatle::RINGO, @options).should be_empty
+          @songs.only_authorized_for(Beatle::GEORGE, @options).should == [Song::TAXMAN, Song::BLUE_JAY_WAY]
+          @songs.only_authorized_for(Beatle::RINGO, @options).should be_empty
         end
 
       end
@@ -68,13 +68,13 @@ describe Walruz::CoreExt::Array do
       end
       
       it "should remote the elements that are not authorized" do
-        @songs.only_authorized(Beatle::JOHN, @options).should == [Song::A_DAY_IN_LIFE, 
+        @songs.only_authorized_for(Beatle::JOHN, @options).should == [Song::A_DAY_IN_LIFE, 
                                                                   Song::YELLOW_SUBMARINE, 
                                                                   Song::TAXMAN]
-        @songs.only_authorized(Beatle::PAUL, @options).should == [Song::A_DAY_IN_LIFE,
+        @songs.only_authorized_for(Beatle::PAUL, @options).should == [Song::A_DAY_IN_LIFE,
                                                                   Song::YELLOW_SUBMARINE]
-        @songs.only_authorized(Beatle::GEORGE, @options).should == [Song::TAXMAN]
-        @songs.only_authorized(Beatle::RINGO, @options).should be_empty
+        @songs.only_authorized_for(Beatle::GEORGE, @options).should == [Song::TAXMAN]
+        @songs.only_authorized_for(Beatle::RINGO, @options).should be_empty
       end
       
     end

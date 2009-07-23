@@ -2,7 +2,7 @@ module Walruz
   module CoreExt
     module Array
   
-      # @overload only_authorized(actor, options = {})
+      # @overload only_authorized_for(actor, options = {})
       #   Filters the +Walruz::Subject+ elements inside an array either by a policy or by an action on the _subject_. 
       #   This will execute the authorization policies using specified _actor_ and action/policy.
       #   === Notes:
@@ -21,14 +21,14 @@ module Walruz
       #     if the opts[:policy] label identifying the policy is not recognized
       # 
       #   @example Filtering a list of Posts by the read action specified on the Post class
-      #     Post.all.only_authorized(current_user, :action => :read)
+      #     Post.all.only_authorized_for(current_user, :action => :read)
       #     # this will execute current_user.can?(:read, post) for each element of the array
       # 
       #   @example Filtering a list of Posts by a policy
-      #     Post.all.only_authorized(nil, :policy => :public_policy)
+      #     Post.all.only_authorized_for(nil, :policy => :public_policy)
       #     # This will execute the Policy with the label ":public_policy" on every post using the given actor
       #
-      # @overload only_authorized(actor, action)
+      # @overload only_authorized_for(actor, action)
       #   Filters the +Walruz::Subject+ elements inside an array by the action specified. 
       #   This will execute the authorization policies using specified actor and action on each _subject_ of the +Array+.
       #
@@ -41,10 +41,10 @@ module Walruz
       #   @raise [Walruz::ActionNotFound] if the _action_ specified is not declaredon the _subject_.
       #
       #   @example Filtering a list of Posts by the read action specified on the Post class
-      #     Post.all.only_authorized(current_user, :read)
+      #     Post.all.only_authorized_for(current_user, :read)
       #     # this will execute current_user.can?(:read, post) for each element of the array
       #
-      def only_authorized(actor, opts = {})
+      def only_authorized_for(actor, opts = {})
         if opts.respond_to?(:[])
           only_authorized_with_options(actor, opts)
         else # use the opts 
