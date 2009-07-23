@@ -1,2 +1,5 @@
 * 0.0.7 (July 23, 2009)
-* New Array#only_authorized_for method for filtering arrays of _subjects_
+* New +Array#only_authorized_for+ method for filtering arrays of _subjects_
+* Added the +satisfy+ on the +Walruz::Actor+ module
+* Added YARD documentation to the Actor module
+* Changed README.rdoc documentation to YARD

@@ -1,9 +1,9 @@
 module Walruz
   module Utils
     
-    module PolicyCompositionHelper
+    module PolicyCompositionHelper # :nodoc: all
       
-      # NOTE: Not using cattr_accessor to avoid dependencies with ActiveSupport
+      #-- NOTE: Not using cattr_accessor to avoid dependencies with ActiveSupport
       
       def policies=(policies)
         @policies = policies

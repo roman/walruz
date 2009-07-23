@@ -42,15 +42,27 @@ module Walruz
   autoload :Policy,  base_path + '/walruz/policy'
   autoload :Utils,   base_path + '/walruz/utils'
   
+
   def self.setup
     config = Config.new
     yield config
   end
   
+  # Holds all the policies declared on the system
+  # @return [Hash<Symbol, Walruz::Policy>] A hash of policies, each identified by it's policy label
+  # @todo Make this safe-thread
   def self.policies
     Walruz::Policy.policies
   end
   
+  # Returns a Walruz::Policy Class represented by the specified label 
+  #
+  # @param [Symbol] policy_label The label that identifies a policy
+  # @return [Walruz::Policy] A Policy class.
+  # @raise [Walruz::ActionNotFound] if the policy label is not recognized.
+  # @example Fetching a policy with label :actor_is_admin
+  #   Walruz.fetch_policy(:actor_is_admin) # => ActorIsAdmin
+  #
   def self.fetch_policy(policy_label)
     policy_clz = Walruz.policies[policy_label]
     raise ActionNotFound.new(:policy_label, :label => policy_label) if policy_clz.nil?

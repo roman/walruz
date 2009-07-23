@@ -1,31 +1,29 @@
 module Walruz
   
   #
-  # This module provides the methods that enable an _Actor_ to check if it is able
-  # to do an action on a _Subject_. It also provides methods to check on specific
+  # This module provides the methods that enable an _actor_ to check if it is able
+  # to do an action on a _subject_. It also provides methods to check on specific
   # Policies given the policy label. The methods mostly used by classes that include this module are:
   #
-  # [+can?(action, subject)+] Returns a Boolean indicating if the actor is authorized to do an action on the subject.
-  # [+authorize(action, subject)+] Returns Either nil if the actor is not authorized or a Hash with the parameters returned from the Policy if the actor is authorized.
-  # [+authorze!(action, subject)+] Returns a Hash returned by the Policy if the actor is authorized or raises a +Walruz::NotAuthorized+ exception otherwise.
-  # [+satisfies?(policy_label, subject)+] Returns true or false if the Policy is satisfied with the actor and subject given.
+  # [<b>+can?(action, subject)+</b>] Returns a Boolean indicating if the actor is authorized to do an action on the subject.
+  # [<b>+authorize(action, subject)+</b>] Returns Either nil if the actor is not authorized or a Hash with the parameters returned from the Policy if the actor is authorized.
+  # [<b>+authorize!(action, subject)+</b>] Returns a Hash returned by the Policy if the actor is authorized or raises a +Walruz::NotAuthorized+ exception otherwise.
+  # [<b>+satisfies?(policy_label, subject)+</b>] Returns true or false if the Policy is satisfied with the actor and subject given.
+  # [<b>+satisfies(policy_label, subject)+</b>] Returns Either nil if the actor and subject don't satisfy the policy or a Hash with the parameters returned from the Policy.
   #
   module Actor
     
     #
     # Allows an _actor_ to check if he can perform an _action_ on a given
     # _subject_. 
+    # === Note:
+    # This method will check the authorization the first time, following invocations will return a cached
+    # result unless the third parameter is specified.
     #
     # @param [Symbol] The action as it is declared on the +check_authorizations+ method on the _subject_ class.
     # @param [Walruz::Subject] The _subject_ on which the _actor_ wants to execute the _action_.
     # @param [Boolean] (optional) A boolean indicating if you want to reset the cached result.
-    # @return [Bool] A boolean indicating if the _actor_ is authorized to perform the _action_ (or not) on the _subject_.
-    #
-    # @example An invocation to perform a `:read` action on a `Post` subject.
-    # 
-    # === Note:
-    # This method will check the authorization the first time, following invocations will return a cached
-    # result unless the third parameter is specified.
+    # @return [Boolean] A boolean indicating if the _actor_ is authorized to perform the _action_ (or not) on the _subject_.
     #
     def can?(*args)
       if args.size == 2
@@ -44,14 +42,18 @@ module Walruz
     
     #
     # Allows an actor to check if he can do some action on a given
-    # subject.
+    # subject. The main difference between this method and the +can?+ method is that
+    # this will return a Hash of values returned by the policies, in case the _actor_ is 
+    # not authorized, it will return nil.
+    # === Note:
+    # This method will check the authorization the first time, following invocations will return a cached
+    # result unless the third parameter is specified.
     #
-    # Params: 
-    #   - label: The label of the action
-    #   - subject: The subject which the actor wants to interact with
+    # @param [Symbol] The action as it is declared on the +check_authorizations+ method on the _subject_ class.
+    # @param [Walruz::Subject] The _subject_ on which the _actor_ wants to execute the _action_.
+    # @param [Boolean] (optional) A boolean indicating if you want to reset the cached result.
+    # @return [Hash] Parameters returned from the _policy_.
     #
-    # Returns:
-    #   Returns a a Hash with parameters given from the policy.
     #
     def authorize(*args)
       if args.size == 2
@@ -70,29 +72,25 @@ module Walruz
       end
     end
     
-    # :nodoc:
     def can_without_caching(label, subject)
       subject.can_be?(label, self)
     end
     
-    # :nodoc:
     def cached_values_for_can
       @_cached_values_for_can ||= {}
     end
     
     #
     # Allows an actor to check if he can do some action on a given
-    # subject.
+    # subject. This method will behave similarly to the +authorize+ method, the only difference is that
+    # instead of returning nil when the _actor_ is not authorized, it will raise a +Walruz::NotAuthorized+ exception.
     #
-    # Params: 
-    #   - label: The label of the action
-    #   - subject: The subject which the actor wants to interact with
+    # @param [Symbol] The action as it is declared on the +check_authorizations+ method on the _subject_ class.
+    # @param [Walruz::Subject] The _subject_ on which the _actor_ wants to execute the _action_.
+    # @return [Hash] Parameters returned from the _policy_.
     #
-    # Returns:
-    #   Returns a a Hash with parameters given from the policy.
+    # @raise [Walruz::NotAuthorized]  error if the _actor_ is not authorized to perform the specified action on the _subject_.
     #
-    # Raises: 
-    #   Walruz::NotAuthorized error if the actor can't execute the action on the subject
     #    
     def authorize!(label, subject)
       result = subject.can_be?(label, self)
@@ -107,28 +105,35 @@ module Walruz
     end
     
     #
-    # Allows an actor to check if he the given policy applies to him and the given subject.
+    # Allows an _actor_ to check if he satisfies the condition of a _policy_ with a given _subject_.
     # 
     # Params:
-    #   - policy: label of the Policy the actor wants to check
-    #   - subject: The subject which the actor wants to interact with
+    # @param [Symbol] The label of the _policy_.
+    # @param [Walruz::Subject] The _subject_.
+    # @return [Boolean] saying if the _actor_ and the _subject_ satisify the _policy_.
     #
-    # block |policy_hash|: 
-    #   If the actor can access the subject, then the block will be executed;
-    #   this will receive the policy hash as a parameter.
-    #
-    # Returns:
-    #   It returns a boolean indicating that the actor is authorized to 
-    #   access (or not) the subject with the given Policy.
-    #
-    def satisfies?(policy_label, subject, &block)
+    def satisfies?(policy_label, subject)
       policy_clz = Walruz.fetch_policy(policy_label)
       result = policy_clz.return_policy.new.safe_authorized?(self, subject)
-      if result[0]
-        block.call(result[1]) if block_given?
-      end
       result[0]
     end
+    
+    
+    #
+    # Allows an _actor_ to check if he satisfies the condition of a _policy_ with a given _subject_.
+    # 
+    # Params:
+    # @param [Symbol] The label of the _policy_.
+    # @param [Walruz::Subject] The _subject_.
+    # @return [Hash] Hash with the parameters returned from the _policy_ if the _actor_ and the _subject_ satisfy the _policy_, nil otherwise.
+    #
+    def satisfies(policy_label, subject)
+      policy_clz = Walruz.fetch_policy(policy_label)
+      result = policy_clz.return_policy.new.safe_authorized?(self, subject)
+      result[0] ? result[1] : nil
+    end
+    
+    protected :can_without_caching, :cached_values_for_can
     
   end
 end

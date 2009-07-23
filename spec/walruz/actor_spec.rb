@@ -108,34 +108,38 @@ describe 'Walruz::Actor' do
   
   describe '#satisfies?' do
     
-    it "should work with the symbol representation of the policy" do
-      Beatle::PAUL.satisfies?(:colaborating_with_john_policy, Song::TAXMAN).should be_false
-    end
-    
-    it "should check only the specified policy" do
-      Beatle::PAUL.satisfies?(:colaborating_with_john_policy, Song::TAXMAN).should be_false
-    end
-    
     it "should raise a Walruz::ActionNotFound error if the policy is not found" do
       lambda do
         Beatle::GEORGE.satisfies?(:unknown_policy, Song::TAXMAN)
       end.should raise_error(Walruz::ActionNotFound)
     end
     
-    it "should execute the block if the condition is true" do
-      proc_called = Proc.new { raise "Is being called" }
-      lambda do
-        Beatle::GEORGE.satisfies?(:colaborating_with_john_policy, Song::TAXMAN, &proc_called)
-      end.should raise_error
+    it "should return false if the actor and the subject dont satisfy the given policy" do
+      Beatle::PAUL.satisfies?(:colaborating_with_john_policy, Song::TAXMAN).should be_false
     end
     
-    it "should execute the block that receives a hash of return parameters of the policy" do
-      proc_called = lambda do |params|  
-        params.should_not be_nil
-        params.should be_kind_of(Hash)
-        params[:in_colaboration?].should be_true
-      end
-      Beatle::GEORGE.satisfies?(:colaborating_with_john_policy, Song::TAXMAN, &proc_called)
+    it "should return true if the actor and the subject satisfy the given policy" do
+      Beatle::GEORGE.satisfies(:colaborating_with_john_policy, Song::TAXMAN).should be_true
+    end
+    
+  end
+  
+  describe "#satisfies" do
+    
+    it "should return nil if the actor and the subject do not satisfy the given policy" do
+      Beatle::PAUL.satisfies(:colaborating_with_john_policy, Song::TAXMAN).should be_nil
+    end
+    
+    it "should return the parameters from the policy if the actor and the subject satisfy the policy" do
+      policy_params = Beatle::GEORGE.satisfies(:colaborating_with_john_policy, Song::TAXMAN)
+      policy_params.should_not be_nil
+      policy_params[:in_colaboration?].should be_true
+    end
+    
+    it "should raise a Walruz::ActionNotFound error if the policy is not found" do
+      lambda do
+        Beatle::GEORGE.satisfies(:unknown_policy, Song::TAXMAN)
+      end.should raise_error(Walruz::ActionNotFound)
     end
     
   end

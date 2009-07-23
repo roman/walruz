@@ -54,7 +54,6 @@ module Walruz
       
       protected
       
-      # @private
       def only_authorized_with_options(actor, opts)
         raise ArgumentError.new("You have to specify either the :action or :policy option") if opts[:action] && opts[:policy]
         if opts[:action]
@@ -69,7 +68,6 @@ module Walruz
         end
       end
       
-      # @private
       def only_authorized_on_action(actor, action)
         self.select do |subject|
           actor.can?(action, subject)
