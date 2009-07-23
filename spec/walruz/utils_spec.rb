@@ -26,9 +26,8 @@ describe Walruz::Utils do
   describe "#all" do
 
     it "should return as policy keyword, the name of the original policies keywords concatenated with `_and_`" do
-      Beatle::JOHN.can?(:sell, Song::ALL_YOU_NEED_IS_LOVE) do |policy_params|
-        policy_params[:"author_policy_and_not(author_in_colaboration_policy)?"].should be_true
-      end
+      policy_params = Beatle::JOHN.authorize(:sell, Song::ALL_YOU_NEED_IS_LOVE)
+      policy_params[:"author_policy_and_not(in_colaboration)?"].should be_true
     end
     
   end
@@ -36,9 +35,8 @@ describe Walruz::Utils do
   describe "#negate" do
     
     it "should return as policy keyword, the name of the original policy keyword with a `not()` around" do
-      Beatle::JOHN.can?(:sell, Song::ALL_YOU_NEED_IS_LOVE) do |policy_params|
-        policy_params[:"not(author_in_colaboration_policy)?"].should be_true
-      end
+      policy_params = Beatle::JOHN.authorize(:sell, Song::ALL_YOU_NEED_IS_LOVE)
+      policy_params[:"not(in_colaboration)?"].should be_true
     end
     
   end

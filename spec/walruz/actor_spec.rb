@@ -68,9 +68,9 @@ describe 'Walruz::Actor' do
   describe '#can?' do
     
     it "should be invoked only the first time and then return a cached solution" do
-      Song::ALL_YOU_NEED_IS_LOVE.should_receive(:can_be?).once.and_return([true, {}])
-      Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE)
-      Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE)
+      Song::YELLOW_SUBMARINE.should_receive(:can_be?).once.and_return([true, {}])
+      Beatle::JOHN.can?(:sing, Song::YELLOW_SUBMARINE, true)
+      Beatle::JOHN.can?(:sing, Song::YELLOW_SUBMARINE)
     end
     
     it "if a boolean third parameter is received it should not use the cached result" do
@@ -133,7 +133,7 @@ describe 'Walruz::Actor' do
       proc_called = lambda do |params|  
         params.should_not be_nil
         params.should be_kind_of(Hash)
-        params[:author_in_colaboration_policy?].should be_true
+        params[:in_colaboration?].should be_true
       end
       Beatle::GEORGE.satisfies?(:colaborating_with_john_policy, Song::TAXMAN, &proc_called)
     end

@@ -30,11 +30,12 @@ class Beatle
     "Ok John, Let's Play '%s'" % song.name
   end
 
-
-  JOHN   = self.new("John")
-  PAUL   = self.new("Paul")
-  RINGO  = self.new("Ringo")
-  GEORGE = self.new("George")
+  unless defined?(RINGO)
+    JOHN   = self.new("John")
+    PAUL   = self.new("Paul")
+    RINGO  = self.new("Ringo")
+    GEORGE = self.new("George")
+  end
 end
 
 class Colaboration
@@ -50,9 +51,12 @@ class Colaboration
     @songs = []
   end
   
-  JOHN_PAUL = self.new(Beatle::JOHN, Beatle::PAUL)
-  JOHN_PAUL_GEORGE = self.new(Beatle::JOHN, Beatle::PAUL, Beatle::GEORGE)
-  JOHN_GEORGE = self.new(Beatle::JOHN, Beatle::GEORGE)
+  unless defined?(JOHN_PAUL)
+    JOHN_PAUL = self.new(Beatle::JOHN, Beatle::PAUL)
+    JOHN_PAUL_GEORGE = self.new(Beatle::JOHN, Beatle::PAUL, Beatle::GEORGE)
+    JOHN_GEORGE = self.new(Beatle::JOHN, Beatle::GEORGE)
+  end
+  
 end
 
 class SubjectIsActorPolicy < Walruz::Policy
@@ -74,12 +78,14 @@ end
 #   end
 #   
 # end
-
-AuthorPolicy = SubjectIsActorPolicy.for_subject(:author) do |authorized, params, actor, subject|
-  params.merge!(:owner => actor) if authorized
+unless defined?(AuthorPolicy)
+  AuthorPolicy = SubjectIsActorPolicy.for_subject(:author) do |authorized, params, actor, subject|
+    params.merge!(:owner => actor) if authorized
+  end
 end
 
 class AuthorInColaborationPolicy < Walruz::Policy
+  set_policy_label :in_colaboration
   
   def authorized?(beatle, song)
     return false unless song.colaboration
@@ -123,11 +129,14 @@ class Song
     owner.songs << self
   end
   
-  A_DAY_IN_LIFE        = self.new("A Day In Life", Colaboration::JOHN_PAUL)
-  YELLOW_SUBMARINE     = self.new("Yellow Submarine", Colaboration::JOHN_PAUL)
-  TAXMAN               = self.new("Taxman", Colaboration::JOHN_GEORGE)
-  YESTERDAY            = self.new("Yesterday", Beatle::PAUL)
-  ALL_YOU_NEED_IS_LOVE = self.new("All You Need Is Love", Beatle::JOHN)
-  BLUE_JAY_WAY         = self.new("Blue Jay Way", Beatle::GEORGE)
+  unless defined?(A_DAY_IN_LIFE)
+    A_DAY_IN_LIFE        = self.new("A Day In Life", Colaboration::JOHN_PAUL)
+    YELLOW_SUBMARINE     = self.new("Yellow Submarine", Colaboration::JOHN_PAUL)
+    TAXMAN               = self.new("Taxman", Colaboration::JOHN_GEORGE)
+    YESTERDAY            = self.new("Yesterday", Beatle::PAUL)
+    ALL_YOU_NEED_IS_LOVE = self.new("All You Need Is Love", Beatle::JOHN)
+    BLUE_JAY_WAY         = self.new("Blue Jay Way", Beatle::GEORGE)
+  end
+  
 end
 

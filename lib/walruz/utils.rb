@@ -86,9 +86,9 @@ module Walruz
         
         # :nodoc:
         def authorized?(actor, subject)
-          self.class.policy.set_params(params)
-          result = self.class.policy.new.safe_authorized?(actor, subject)
-          !result[0]
+          result = self.class.policy.new.set_params(params).safe_authorized?(actor, subject)
+          result[0] = !result[0]
+          result
         end
         
         # :nodoc:

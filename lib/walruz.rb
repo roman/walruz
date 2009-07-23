@@ -51,6 +51,12 @@ module Walruz
     Walruz::Policy.policies
   end
   
+  def self.fetch_policy(policy_label)
+    policy_clz = Walruz.policies[policy_label]
+    raise ActionNotFound.new(:policy_label, :label => policy_label) if policy_clz.nil?
+    policy_clz
+  end
+  
   class Config
     
     def actors=(actors)
@@ -67,5 +73,7 @@ module Walruz
     
   end
   
-
 end
+
+require File.dirname(__FILE__) + '/walruz/core_ext/array'
+Array.send(:include, Walruz::CoreExt::Array)

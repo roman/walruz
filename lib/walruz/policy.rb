@@ -59,7 +59,7 @@ module Walruz
     # Returns: (subject -> [Bool, Hash])
     #
     # Example:
-    #   subjects.filter(&PolicyXYZ.with_actor(some_user))
+    #   subjects.select(&PolicyXYZ.with_actor(some_user))
     #
     def self.with_actor(actor)
       policy_instance = self.new
@@ -171,6 +171,7 @@ module Walruz
     #   - label: Symbol that represents the policy
     # 
     def self.set_policy_label(label)
+      Walruz.policies[label] = Walruz.policies.delete(self.policy_label)
       @policy_label = label
     end
     
