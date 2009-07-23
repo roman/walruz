@@ -1,0 +1,2 @@
+* 0.0.7 (July 23, 2009)
+* New Array#only_authorized_for method for filtering arrays of _subjects_
