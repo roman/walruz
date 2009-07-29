@@ -4,27 +4,27 @@
 
 Walruz facilitates the separation between the authorization process on the business logic and the actions executed after the validation of the authorizations. To understand how it works, we will follow the following terminology:
 
-[*Subject*] Object that is going to be managed (Profile, Posts).
-[*Actor*] Entity that wants to perform an action on a _subject_ (User, Admin).
-[*Policy*] A set of rules that tells if the _actor_ can perform the desired action on the _subject_.
+[<b>Subject</b>] Object that is going to be managed (Profile, Posts).
+[<b>Actor</b>] Entity that wants to perform an action on a <em>subject</em> (User, Admin).
+[<b>Policy</b>] A set of rules that tells if the <em>actor</em> can perform the desired action on the <em>subject</em>.
 
 == Walruz Architecture 
 
 Walruz provides modules and classes that help on the implementation of the concepts given previously, this are:
   
-[<b>+Walruz::Subject+</b>]
-  Module that provides the interface to associate policies to an action in the _subject_.
+[<b><tt>Walruz::Subject</tt></b>]
+  Module that provides the interface to associate policies to an action in the <em>subject</em>.
   
-[<b>+Walruz::Actor+</b>]
+[<b><tt>Walruz::Actor</tt></b>]
   Module that provides the interface to perform queries to validate if an action can be done between the
-  _actor_ and the _subject_.
+  <em>actor</em> and the <em>subject</em>.
     
-[<b>+Walruz::Policy+</b>]
+[<b><tt>Walruz::Policy</tt></b>]
   Class that provides the interface to implement authorization logic.
 
 == Subjects specify which policies are related to which actions
 
-Subject classes may specify a set of actions that can be performed to them using the +check_authorization+ method
+Subject classes may specify a set of actions that can be performed to them using the <tt>check_authorization</tt> method
 
   class User
     include Walruz::Subject
@@ -33,7 +33,7 @@ Subject classes may specify a set of actions that can be performed to them using
                         :update => UserUpdatePolicy
   end
 
-If there is just one _policy_ to every possible action performed to the _subject_, you may specify the :default action, or just specify the Policy class.
+If there is just one <em>policy</em> to every possible action performed to the <em>subject</em>, you may specify the :default action, or just specify the Policy class.
 
 Example:
 
@@ -63,15 +63,15 @@ You can also specify other flags with the default flag.
 
 == Actors verify if they are able to perform an action on a subject
 
-Actor classes can use several methods to check if the _actor_ instance can perform the given action on a _subject_. This are:
+Actor classes can use several methods to check if the <em>actor</em> instance can perform the given action on a <em>subject</em>. This are:
 
-[<b>+can?(action, subject)+</b>] Returns boolean that says if the _actor_ can execute or not the action on the _subject_.
+[<b><tt>can?(action, subject)</tt></b>] Returns boolean that says if the <em>actor</em> can execute or not the action on the <em>subject</em>.
 
-[<b>+authorize(action, subject)+</b>] In case the _actor_ can execute the action on the _subject_, it returns the parameters hash from the _policy_, otherwise it will raise a +Walruz::NotAuthorized+.
+[<b><tt>authorize(action, subject)</tt></b>] In case the <em>actor</em> can execute the action on the <em>subject</em>, it returns the parameters hash from the <em>policy</em>, otherwise it will raise a <tt>Walruz::NotAuthorized</tt>.
 
-[<b>+satisfies?(policy_label, subject)+</b>] It behaves just like the +can?+ method, but instead of giving an action to be executed to the _subject_, it receives a _policy_ label.
+[<b><tt>satisfies?(policy_label, subject)</tt></b>] It behaves just like the <tt>can?</tt> method, but instead of giving an action to be executed to the <em>subject</em>, it receives a <em>policy</em> label.
 
-In case the given action is not assigned to any _policy_, a default Policy will be executed (if given), if no default _policy_ is given then a +Walruz::ActionNotFound+ exception will be raised.
+In case the given action is not assigned to any <em>policy</em>, a default Policy will be executed (if given), if no default <em>policy</em> is given then a <tt>Walruz::ActionNotFound</tt> exception will be raised.
 
 Examples:
   
@@ -83,9 +83,9 @@ Examples:
 
 == Implementing Policies
 
-To implement a _policy_, it is necessary to inherit from the Walruz::Policy class. This class provides a method called +authorized?+ that return either a Boolean, or an Array of two items, the first one being a Boolean, and the second being a Hash of parameters returned from the Policy.
+To implement a <em>policy</em>, it is necessary to inherit from the Walruz::Policy class. This class provides a method called <tt>authorized?</tt> that return either a Boolean, or an Array of two items, the first one being a Boolean, and the second being a Hash of parameters returned from the Policy.
 
-Every Policy Class also has a label associated to it, by default the label will be the name of the class in underscore case; if you want to have a custom label for a Policy Class, you can invoke the +set_policy_label+ method on the class context and specify the label that you want for it. This label is used on the +satisfies?+ method.
+Every Policy Class also has a label associated to it, by default the label will be the name of the class in underscore case; if you want to have a custom label for a Policy Class, you can invoke the <tt>set_policy_label</tt> method on the class context and specify the label that you want for it. This label is used on the <tt>satisfies?</tt> method.
 
 Examples:
   
@@ -120,11 +120,11 @@ Sometimes policies can turn really messy, specially when you have a complex busi
 
   ActorCanSeeUserPictures = Walruz::Utils.all(UserIsFriend, UserAllowsDisclosureOfPictures)
 
-There is also the utility methods +any+ and +not+, to create combinations of policies. 
+There is also the utility methods <tt>any</tt> and <tt>not</tt>, to create combinations of policies. 
 
-If your _policy_ returns a parameters hash, and you are using the +all+ method, the parameters of each _policy_ will be merged together, if you are using the +any+ method, the parameters of the first _policy_ that returns true will be returned.
+If your <em>policy</em> returns a parameters hash, and you are using the <tt>all</tt> method, the parameters of each <em>policy</em> will be merged together, if you are using the <tt>any</tt> method, the parameters of the first <em>policy</em> that returns true will be returned.
 
-One other thing that the utility methods does for you is that it leaves its track on the returned _policy_ parameters, when you invoke a composite _policy_, every _policy_ will leave in the parameters hash the policy_label with a question mark at the end, that way you can know which policies were successful or not. 
+One other thing that the utility methods does for you is that it leaves its track on the returned <em>policy</em> parameters, when you invoke a composite <em>policy</em>, every <em>policy</em> will leave in the parameters hash the policy_label with a question mark at the end, that way you can know which policies were successful or not. 
 
 Example:
   
@@ -164,7 +164,7 @@ Example:
 
 == Dependencies between Policies
 
-Sometimes you would like to have a Policy that strictly depends in other policies, on the previous example +UserAllowsDisclosureOfPictures+ could have a dependency that says that only the User allows the disclosure of pictures if and only if there is a friend relationship, so we could re-implement this _policy_ as:
+Sometimes you would like to have a Policy that strictly depends in other policies, on the previous example <tt>UserAllowsDisclosureOfPictures</tt> could have a dependency that says that only the User allows the disclosure of pictures if and only if there is a friend relationship, so we could re-implement this <em>policy</em> as:
 
 Example:
 
@@ -173,7 +173,7 @@ Example:
     # ...
   end
 
-Suppose you need the parameters returned by the previous Policy, you can have them with the +params+ method.
+Suppose you need the parameters returned by the previous Policy, you can have them with the <tt>params</tt> method.
 
 Example:
 
@@ -188,7 +188,7 @@ Example:
   
 == Policy combinators
 
-Sometimes you would like to execute policies that are not directly related to a _subject_, but to the association of a _subject_. Given the example above of the friendship relationship and the disclosure of pictures, sometimes you would like to check if a user can see a picture directly on the picture model.
+Sometimes you would like to execute policies that are not directly related to a <em>subject</em>, but to the association of a <em>subject</em>. Given the example above of the friendship relationship and the disclosure of pictures, sometimes you would like to check if a user can see a picture directly on the picture model.
 
 Suppose we have the following model in our system:
 
@@ -200,7 +200,7 @@ and we would like to check if the current_user can see (read) the picture using:
 
   current_user.can?(:read, picture_instance)
   
-If you may recall, we already implemented the logic that checks that authorization in UserAllowsDisclosureOfPictures, but that _policy_ only works when the _subject_ is of class User; given that you have a _subject_ of class Picture you can not re-use this _policy_.
+If you may recall, we already implemented the logic that checks that authorization in UserAllowsDisclosureOfPictures, but that <em>policy</em> only works when the <em>subject</em> is of class User; given that you have a <em>subject</em> of class Picture you can not re-use this <em>policy</em>.
 
 You could solve this issue doing the following:
 
@@ -212,7 +212,7 @@ You could solve this issue doing the following:
     
   end
 
-But as you may see, we are just creating new policies to handle old ones, we are not combining the policies effectively. To avoid this caveat, you can use the +PolicyClass.for_subject+ method:
+But as you may see, we are just creating new policies to handle old ones, we are not combining the policies effectively. To avoid this caveat, you can use the <tt>PolicyClass.for_subject</tt> method:
 
   PictureReadPolicy = UserAllowsDisclosureOfPictures.for_subject(:owner)
   
@@ -223,11 +223,11 @@ But as you may see, we are just creating new policies to handle old ones, we are
     check_authorizations :read => PictureReadPolicy
   end
   
-The parameter of +but_for+ is the name of the _subject's_ method that will return a new _subject_, this new _subject_ is then passed through the _policy_. Pretty neat eh?
+The parameter of <tt>but_for</tt> is the name of the <em>subject's</em> method that will return a new <em>subject</em>, this new <em>subject</em> is then passed through the <em>policy</em>. Pretty neat eh?
 
 == Returning custom errors
 
-Suppose you want to add an error to the authorization failure that is a more descriptive, you can do so on the +authorized?+ method passing a hash with a :error_message key on the false return. If you use the +can!+ method on the _actor_ model, this will become the +Walruz::NotAuthorized+ error message.
+Suppose you want to add an error to the authorization failure that is a more descriptive, you can do so on the <tt>authorized?</tt> method passing a hash with a :error_message key on the false return. If you use the <tt>can!</tt> method on the <em>actor</em> model, this will become the <tt>Walruz::NotAuthorized</tt> error message.
 
 Example:
   
@@ -244,19 +244,19 @@ Example:
 
 == Conventions
 
-You'll notice that once you start implementing policies for your system, you'll be lost soon enough asking yourself which type of _subject_ a Policy receives; to avoid such confusions, we suggest that you apply the following rules:
+You'll notice that once you start implementing policies for your system, you'll be lost soon enough asking yourself which type of <em>subject</em> a Policy receives; to avoid such confusions, we suggest that you apply the following rules:
 
-- The first name of the _policy_ should be the Subject class (e.g. UserIsFriend)
-- If the _policy_ only applies to the _actor_, the _policy_ class name should start with the Actor word (e.g. ActorIsAdmin)
+- The first name of the <em>policy</em> should be the Subject class (e.g. UserIsFriend)
+- If the <em>policy</em> only applies to the <em>actor</em>, the <em>policy</em> class name should start with the Actor word (e.g. ActorIsAdmin)
 - You should always have the compositions of policies in just one place in your library folder (e.g. in policies.rb file).
-- The result of _policy_ compositions should finish with the word Policy (e.g +UserDeletePolicy = any(ActorIsSubject, ActorIsAdmin+))
-- Use +PolicyClass.but_for+ when you are combining the PolicyClass with other policies, if you are not doing this, consider checking authorizations on parents of the _subject_ instead of the _subject_ (e.g. current_user.can?(:see_pictures_of, picture.owner))
+- The result of <em>policy</em> compositions should finish with the word Policy (e.g <tt>UserDeletePolicy = any(ActorIsSubject, ActorIsAdmin</tt>))
+- Use <tt>PolicyClass.but_for</tt> when you are combining the PolicyClass with other policies, if you are not doing this, consider checking authorizations on parents of the <em>subject</em> instead of the <em>subject</em> (e.g. current_user.can?(:see_pictures_of, picture.owner))
 
 If you follow this rules, it will be much easier for you to merge policies together in an efficient way.
 
 == Rails Integration
 
-See "walruz-rails":http://walruz-rails.rubyforge.com gem
+See walruz-rails[http://github.com/noomii/walruz-rails] gem.
 
 == More examples
 
@@ -264,8 +264,8 @@ You may check the project in the examples/ directory for more info; on the rails
 
 == Copyright
 
-Copyright (c) 2009 Roman Gonzalez <romanandreg@gmail.com>
+Copyright (c) 2009 Roman Gonzalez <romanandreg@gmail.com>.
 
-Copyright (c) 2009 Noomii inc. <http://www.noomii.com>
+Copyright (c) 2009 Noomii inc. <http://www.noomii.com>.
 
 All rights reserved.
