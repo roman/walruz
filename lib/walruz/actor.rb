@@ -1,8 +1,8 @@
 module Walruz
   
   #
-  # This module provides the methods that enable an _actor_ to check if it is able
-  # to do an action on a _subject_. It also provides methods to check on specific
+  # This module provides the methods that enable an <em>actor</em> to check if it is able
+  # to do an action on a <em>subject</em>. It also provides methods to check on specific
   # Policies given the policy label. The methods mostly used by classes that include this module are:
   #
   # [<b><tt>can?(action, subject)</tt></b>] Returns a Boolean indicating if the actor is authorized to do an action on the subject.

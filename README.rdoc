@@ -77,7 +77,7 @@ Examples:
   
   current_user.can?(:read, friends_profile)      #=> true
   current_user.satisfies?(:actor_is_admin, nil)  #=> false
-  current_user.satisfies?(:actor_is_admin, nil)  #=> nil
+  current_user.satisfies(:actor_is_admin, nil)  #=> nil
   current_user.authorize(:read, friends_profile) #=> Hash
   current_user.authorize!(:read, other_person_profile) # => raises Walruz::NotAuthorized 
 
@@ -112,11 +112,18 @@ Examples:
     end
   
   end
+  
+  # Examples using this policies with the satisfies method
+  
+  current_user.satisfies?(:is_admin, nil)
+  
+  # By default, the policy label is the name of the class in underscore case.
+  current_user.satisfies?(:user_is_friend, other_user)
 
 
 == Composing basic policies to create complex ones
 
-Sometimes policies can turn really messy, specially when you have a complex business model. The good news is that normally this complex policies are a composition of more simple policies (e.g. ActorCanSeeUserPictures). Instead of creating this new classes that replicates the same logic of basic policies, we could merge them together in the following way:
+Sometimes policies can turn really messy, specially when you have a complex business model. The good news is that normally this complex policies are a composition of more simple policies (e.g. <tt>ActorCanSeeUserPictures</tt>). Instead of creating this new classes that replicates the same logic of basic policies, we could merge them together in the following way:
 
   ActorCanSeeUserPictures = Walruz::Utils.all(UserIsFriend, UserAllowsDisclosureOfPictures)
 
@@ -196,11 +203,11 @@ Suppose we have the following model in our system:
     belongs_to :owner
   end
 
-and we would like to check if the current_user can see (read) the picture using:
+and we would like to check if the <tt>current_user</tt> can see (read) the picture using:
 
   current_user.can?(:read, picture_instance)
   
-If you may recall, we already implemented the logic that checks that authorization in UserAllowsDisclosureOfPictures, but that <em>policy</em> only works when the <em>subject</em> is of class User; given that you have a <em>subject</em> of class Picture you can not re-use this <em>policy</em>.
+If you may recall, we already implemented the logic that checks that authorization in <tt>UserAllowsDisclosureOfPictures</tt>, but that <em>policy</em> only works when the <em>subject</em> is of class User; given that you have a <em>subject</em> of class Picture you can not re-use this <em>policy</em>.
 
 You could solve this issue doing the following:
 
@@ -227,7 +234,7 @@ The parameter of <tt>but_for</tt> is the name of the <em>subject's</em> method t
 
 == Returning custom errors
 
-Suppose you want to add an error to the authorization failure that is a more descriptive, you can do so on the <tt>authorized?</tt> method passing a hash with a :error_message key on the false return. If you use the <tt>can!</tt> method on the <em>actor</em> model, this will become the <tt>Walruz::NotAuthorized</tt> error message.
+Suppose you want to add an error to the authorization failure that is a more descriptive, you can do so on the <tt>authorized?</tt> method passing a hash with a <tt>:error_message</tt> key on the false return. If you use the <tt>can!</tt> method on the <em>actor</em> model, this will become the <tt>Walruz::NotAuthorized</tt> error message.
 
 Example:
   
@@ -244,13 +251,13 @@ Example:
 
 == Conventions
 
-You'll notice that once you start implementing policies for your system, you'll be lost soon enough asking yourself which type of <em>subject</em> a Policy receives; to avoid such confusions, we suggest that you apply the following rules:
+You'll notice that once you start implementing policies for your system, you'll be lost soon enough asking yourself which type of <em>subject</em> a Policy receives; to avoid such confusions, we suggest that you apply the following rules of thumb:
 
-- The first name of the <em>policy</em> should be the Subject class (e.g. UserIsFriend)
-- If the <em>policy</em> only applies to the <em>actor</em>, the <em>policy</em> class name should start with the Actor word (e.g. ActorIsAdmin)
-- You should always have the compositions of policies in just one place in your library folder (e.g. in policies.rb file).
-- The result of <em>policy</em> compositions should finish with the word Policy (e.g <tt>UserDeletePolicy = any(ActorIsSubject, ActorIsAdmin</tt>))
-- Use <tt>PolicyClass.but_for</tt> when you are combining the PolicyClass with other policies, if you are not doing this, consider checking authorizations on parents of the <em>subject</em> instead of the <em>subject</em> (e.g. current_user.can?(:see_pictures_of, picture.owner))
+- The first name of the <em>policy</em> should be the Subject class (e.g. <tt>UserIsFriend</tt>)
+- If the <em>policy</em> only applies to the <em>actor</em>, the <em>policy</em> class name should start with the Actor word (e.g. <tt>ActorIsAdmin</tt>)
+- You should always have the compositions of policies in just one place in your library folder (e.g. in <tt>policies.rb</tt> file).
+- The result of <em>policy</em> compositions should finish with the word Policy (e.g <tt>UserDeletePolicy = any(ActorIsSubject, ActorIsAdmin)</tt>)
+- Use <tt>PolicyClass.but_for</tt> when you are combining the <em>policy</em> class with other policies, if you are not doing this, consider checking authorizations on parents of the <em>subject</em> instead of the <em>subject</em> (e.g. <tt>current_user.can?(:see_pictures_of, picture.owner)</tt>)
 
 If you follow this rules, it will be much easier for you to merge policies together in an efficient way.
 
@@ -260,7 +267,7 @@ See walruz-rails[http://github.com/noomii/walruz-rails] gem.
 
 == More examples
 
-You may check the project in the examples/ directory for more info; on the rails project, take a look on the spec/models/beatle_spec.rb file, it's really illustrating.
+You may check the project in the examples/ directory for more info; on the rails project, take a look on the <tt>spec/models/beatle_spec.rb</tt> file, it's really illustrating.
 
 == Copyright
 
