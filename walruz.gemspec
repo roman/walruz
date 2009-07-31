@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{walruz}
-  s.version = "0.0.6"
+  s.version = "0.0.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Roman Gonzalez"]
-  s.date = %q{2009-07-20}
+  s.date = %q{2009-07-30}
   s.email = %q{roman@noomi.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
     "VERSION.yml",
     "lib/walruz.rb",
     "lib/walruz/actor.rb",
+    "lib/walruz/core_ext/array.rb",
     "lib/walruz/policy.rb",
     "lib/walruz/subject.rb",
     "lib/walruz/utils.rb",
@@ -26,11 +27,13 @@ Gem::Specification.new do |s|
     "spec/spec.opts",
     "spec/spec_helper.rb",
     "spec/walruz/actor_spec.rb",
+    "spec/walruz/core_ext/array_spec.rb",
     "spec/walruz/policy_spec.rb",
     "spec/walruz/subject_spec.rb",
     "spec/walruz/utils_spec.rb",
     "spec/walruz/walruz_spec.rb"
   ]
+  s.has_rdoc = %q{yard}
   s.homepage = %q{http://github.com/noomii/walruz}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
@@ -41,6 +44,7 @@ Gem::Specification.new do |s|
     "spec/scenario.rb",
     "spec/spec_helper.rb",
     "spec/walruz/actor_spec.rb",
+    "spec/walruz/core_ext/array_spec.rb",
     "spec/walruz/policy_spec.rb",
     "spec/walruz/subject_spec.rb",
     "spec/walruz/utils_spec.rb",
