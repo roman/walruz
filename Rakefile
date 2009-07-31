@@ -10,6 +10,7 @@ begin
     gem.homepage = "http://github.com/noomii/walruz"
     gem.authors = ["Roman Gonzalez"]
     gem.rubyforge_project = "walruz"
+    gem.has_rdoc = 'yard'
   
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end

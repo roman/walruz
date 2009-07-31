@@ -12,8 +12,8 @@ module Walruz
       #   @param [Walruz::Actor] actor The _actor_ that is going to be used on the authorization process
       # 
       #   @param [Hash] opts for the filtering process.
-      #   @options opts [Symbol] :action The name of the action to be executed on the list of subjects.
-      #   @options opts [Symbol] :policy The label of an specific policy that is going to be used.
+      #   @option opts [Symbol] :action The name of the action to be executed on the list of subjects.
+      #   @option opts [Symbol] :policy The label of an specific policy that is going to be used.
       # 
       #   @return [Array<Walruz::Subject>] An array with the authorized subjects.
       # 

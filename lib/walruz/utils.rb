@@ -1,4 +1,40 @@
 module Walruz
+  #
+  # This module provides pretty handy methods to do compositions of basic policies to create
+  # more complex ones.
+  #
+  # === Using a policies file to manage complex policies
+  #
+  # It's always a good idea to keep the policy composition in one place, you may place a file in your 
+  # project where you manage all the authorization policies, and then you use them on your models.
+  #
+  # Say for example you have a <tt>lib/policies.rb</tt> in your project where you manage the composition of policies,
+  # and a <tt>lib/policies</tt> folder where you create your custom policies.
+  #
+  # The <tt>lib/policies.rb</tt> file could be something like this:
+  # 
+  #   module Policies
+  #     include Walruz::Utils 
+  #     
+  #     # Requiring basic Walruz::Policy classes
+  #     BASE = File.join(File.dirname(__FILE__), "policies") unless defined?(BASE)
+  #     require File.join(BASE, "actor_is_admin")
+  #     require File.join(BASE, "user_is_owner")
+  #     require File.join(BASE, "user_is_friend")
+  #   
+  #     #####
+  #     # User Policies
+  #     #
+  #     UserCreatePolicy  = ActorIsAdmin
+  #     UserReadPolicy    = any(UserIsOwner, UserIsFriend, ActorIsAdmin)
+  #     UserUpdatePolicy  = any(UserIsOwner, ActorIsAdmin)
+  #     UserDestroyPolicy = ActorIsAdmin
+  # 
+  #   end
+  # 
+  # Using a policies file on your project, keeps all your authorization logic just in one place
+  # that way, when you change the authorizations you just have to go to one place only.
+  #
   module Utils
     
     module PolicyCompositionHelper # :nodoc: all
@@ -32,13 +68,21 @@ module Walruz
       
     end
     
+    #
+    # Generates a new policy that merges together different policies by an <em>OR</em> association.
+    # As soon as one of the policies succeed, the parameters of that policy will be returned.
+    #
+    # @param [Array<Walruz::Policy>] A set of policies that will be merged by an <em>OR</em> association.
+    # @return [Walruz::Policy] A new policy class that will execute each policy until one of them succeeds.
+    #
+    # @example 
+    #   UserReadPolicy = any(UserIsOwner, UserIsAdmin)
+    #
     def any(*policies)
-      # :nodoc:
-      clazz = Class.new(Walruz::Policy) do
+      clazz = Class.new(Walruz::Policy) do # :nodoc:
         extend PolicyCompositionHelper
         
-        # :nodoc:
-        def authorized?(actor, subject)
+        def authorized?(actor, subject) # :nodoc:
           result = nil
           self.class.policies.detect do |policy|
             result = policy.new.set_params(params).safe_authorized?(actor, subject)
@@ -52,13 +96,20 @@ module Walruz
       clazz
     end
     
+    #
+    # Generates a new policy that merges together different policies by an <em>AND</em> association.
+    # This will execute every <em>policy</em> on the list, if all of them return true then the policy will
+    # succeed. This process will merge the parameters of each policy, so you may be able to use the parameters 
+    # of previous policies, and at the end it will return all the parameters from every policy.
+    #
+    # @param [Array<Walruz::Policy>] A set of policies that will be merged by an <em>AND</em> association.
+    # @return [Walruz::Policy] A new policy class that will check true for each policy.
+    #
     def all(*policies)
-      # :nodoc:
-      clazz = Class.new(Walruz::Policy) do
+      clazz = Class.new(Walruz::Policy) do # :nodoc:
         extend PolicyCompositionHelper
         
-        # :nodoc:
-        def authorized?(actor, subject)
+        def authorized?(actor, subject) # :nodoc:
           acum = [true, self.params || {}]
           self.class.policies.each do |policy|
             break unless acum[0]
@@ -69,8 +120,7 @@ module Walruz
           acum[0] ? acum : acum[0]
         end
         
-        # :nodoc:
-        def self.policy_keyword
+        def self.policy_keyword # :nodoc:
           (self.policies.map { |p| p.policy_keyword.to_s[0..-2] }.join('_and_') + "?").to_sym
         end
         
@@ -79,9 +129,13 @@ module Walruz
       clazz
     end
     
+    # 
+    # Generates a new policy that negates the result of the given policy.
+    # @param [Walruz::Policy] The policy which result is going to be negated.
+    # @param [Walruz::Policy] A new policy that will negate the result of the given policy.
+    #
     def negate(policy)
-      # :nodoc:
-      clazz = Class.new(Walruz::Policy) do
+      clazz = Class.new(Walruz::Policy) do # :nodoc:
         extend PolicyCompositionHelper
         
         # :nodoc:
@@ -91,8 +145,8 @@ module Walruz
           result
         end
         
-        # :nodoc:
-        def self.policy_keyword
+        
+        def self.policy_keyword # :nodoc:
           keyword = self.policy.policy_keyword.to_s[0..-2]
           :"not(#{keyword})?"
         end

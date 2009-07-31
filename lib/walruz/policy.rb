@@ -1,42 +1,42 @@
 module Walruz
   
   #
-  # One of the cores of the framework, it's purpuse is to encapsulate
-  # some authorization logic with a given actor and subject.
-  # It's main method `authorized?(actor, subject)` verifies that 
-  # an actor is actually authorized to manage the subject. 
+  # One of the cores of the framework, its purpose is to encapsulate an authorization logic 
+  # with a given actor and subject. It's main method <tt>authorized?(actor, subject)</tt> 
+  # verifies that an actor is authorized to manage the subject.
   #
   class Policy
     extend Walruz::Utils
     
-    # @private
-    # :nodoc:
-    def self.inherited(child)
+    
+    def self.inherited(child) # :nodoc:
       @policies ||= {}
       unless child.policy_label.nil?
         @policies[child.policy_label] = child
       end
     end
     
-    #
-    # See +Walruz.policies+.
-    #
+    
+    # @see Walruz.policies
     def self.policies
       @policies || {}
     end
     
-    # Creates a new policy class based on an existing one, this method is used 
-    # when you want to reuse a Policy class for a subject association
+    #
+    # Creates a new policy class based on an existing one, you may use this method
+    # when you want to reuse a Policy class for a subject's association.
     # 
-    # See the "Policy Combinators" section on the README for more info
+    # @param [Symbol] Name of the association that will be the subject of the policy.
+    # @return [Walruz::Policy] New generated policy that will pass the association as the subject of the original <em>policy</em>.
+    # 
+    # @see http://github.com/noomii/walruz See the "Policy Combinators" section on the README for more info and examples.
     #
     def self.for_subject(key, &block)
-      # :nodoc:
-      clazz = Class.new(Walruz::Policy) do
+      
+      clazz = Class.new(Walruz::Policy) do # :nodoc:
         extend Walruz::Utils::PolicyCompositionHelper
         
-        # :nodoc:
-        def authorized?(actor, subject)
+        def authorized?(actor, subject) # :nodoc:
           params = self.class.params
           new_subject = subject.send(params[:key])
           result = self.class.policy.new.safe_authorized?(actor, new_subject)
@@ -51,16 +51,17 @@ module Walruz
     end
     
     #
-    # Returns a Proc with a curried actor, making it easier
-    # to perform validations of a policy in an Array of subjects
-    # Params:
-    #   - actor: The actor who checks if it is authorized
+    # Returns a Proc with a curried actor, making it easier to perform validations of a policy 
+    # in an Array of subjects.
     #
-    # Returns: (subject -> [Bool, Hash])
-    #
-    # Example:
+    # @param [Walruz::Actor] The actor who checks if he is authorized.
+    # @return [Proc] A proc that receives as a parameter subject and returns what the <tt>authorized?</tt> 
+    #                method returns.
+    # 
+    # @example
     #   subjects.select(&PolicyXYZ.with_actor(some_user))
     #
+    # @see Walruz::CoreExt::Array#only_authorized_for
     def self.with_actor(actor)
       policy_instance = self.new
       lambda do |subject|
@@ -71,13 +72,18 @@ module Walruz
     #
     # Stablish other Policy dependencies, so that they are executed
     # before the current one, giving chances to receive the previous 
-    # policies return parameters
+    # policies return parameters.
+    # 
+    # @param [Array<Walruz::Policies>] Policies in wich this policy depends on.
+    # @return self
     #
-    # Example: 
+    # @example 
     #   class FriendEditProfilePolicy
     #     depends_on FriendPolicy
     #     
     #     def authorized?(actor, subject)
+    #       # The FriendPolicy returns a hash with a key of :friend_relationship
+    #       # this will be available via the params method.
     #       params[:friend_relationship].can_edit? # for friend metadata
     #     end
     #
@@ -88,23 +94,17 @@ module Walruz
     end
     
     # Utility for depends_on macro
-    # @private
-    # :nodoc:
-    def self.policy_dependencies=(dependencies)
+    def self.policy_dependencies=(dependencies) # :nodoc:
       @_policy_dependencies = dependencies
     end
     
     # Utility for depends_on macro
-    # @private
-    # :nodoc:
-    def self.policy_dependencies
+    def self.policy_dependencies # :nodoc:
       @_policy_dependencies
     end
     
     # Utility for depends_on macro
-    # @private
-    # :nodoc:
-    def self.return_policy
+    def self.return_policy # :nodoc:
       if policy_dependencies.nil?
         self
       else
@@ -112,10 +112,8 @@ module Walruz
       end
     end
     
-    # Utility method (copied from ActiveSupport)
-    # @private
-    # :nodoc:
-    def self.underscore(camel_cased_word)
+    # Utility method (from ActiveSupport)
+    def self.underscore(camel_cased_word) # :nodoc:
       if camel_cased_word.empty?
         camel_cased_word
       else
@@ -130,11 +128,12 @@ module Walruz
     
     #
     # Verifies if the actor is authorized to interact with the subject
-    # Params:
-    #   - actor: The object who checks if it is authorized
-    #   - subject: The object that is going to be accesed
+    # @param [Walruz::Actor] The object who checks if it is authorized
+    # @param [Walruz::Subject] The object that is going to be accesed
+    # @return It may return a Boolean, or an Array with the first position being a boolean and the second
+    #          being a Hash of parameters returned from the policy.
     #
-    # Returns: [Bool, Hash]
+    #
     #
     def authorized?(actor, subject)
       raise NotImplementedError.new("You need to implement policy")
@@ -144,9 +143,8 @@ module Walruz
     # Returns the identifier of the Policy that will be setted on the 
     # policy params hash once the authorization is executed. 
     # 
-    # Returns:
-    # By default it will return a symbol with the name of the Policy class in underscore (unless the policy label
-    # was setted, in that case the policy label will be used) with an '?' appended
+    # @return [Symbol] By default it will return a symbol with the name of the Policy class in underscore (unless the policy label
+    #         was setted, in that case the policy label will be used) with an '?' appended.
     #
     def self.policy_keyword
       if self.policy_label.nil?
@@ -175,18 +173,14 @@ module Walruz
       @policy_label = label
     end
     
-    # @private
-    # :nodoc:
-    def safe_authorized?(actor, subject)
+    def safe_authorized?(actor, subject) # :nodoc:
       result = Array(authorized?(actor, subject))
       result[1] ||= {}
       result[1][self.class.policy_keyword] = result[0] unless self.class.policy_keyword.nil?
       result
     end
     
-    # @private
-    # :nodoc:
-    def set_params(params)
+    def set_params(params) # :nodoc:
       @params = params
       self
     end

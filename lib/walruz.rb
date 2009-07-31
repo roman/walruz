@@ -50,7 +50,7 @@ module Walruz
   
   # Holds all the policies declared on the system
   # @return [Hash<Symbol, Walruz::Policy>] A hash of policies, each identified by it's policy label
-  # @todo Make this safe-thread
+  # @todo Make this thread-safe
   def self.policies
     Walruz::Policy.policies
   end
