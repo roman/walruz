@@ -25,14 +25,6 @@ Spec::Rake::SpecTask.new(:spec) do |spec|
   spec.spec_opts = ['--options', "\"%s/spec/spec.opts\"" % File.dirname(__FILE__)]
 end
 
-namespace :spec do 
-  Spec::Rake::SpecTask.new(:pre_commit) do |spec|
-    spec.libs << 'lib' << 'spec'
-    spec.spec_files = FileList['spec/**/*_spec.rb']
-    spec.spec_opts = ['--options', "\"%s/spec/spec_pre_commit.opts\"" % File.dirname(__FILE__)]
-  end
-end
-
 Spec::Rake::SpecTask.new(:rcov) do |spec|
   spec.libs << 'lib' << 'spec'
   spec.pattern = 'spec/**/*_spec.rb'
