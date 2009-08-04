@@ -1,0 +1,5 @@
+--format h:tmp/spec_results.html
+--format p
+--loadby mtime
+--reverse
+--backtrace
