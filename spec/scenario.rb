@@ -15,7 +15,7 @@ class Foo
     end
   end
 
-  memoize :highcost
+  walruz_memoize :highcost
 
 end
 

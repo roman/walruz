@@ -7,13 +7,14 @@ module Walruz
 
     module ClassMethods
 
-      def memoize(*methods)
+      # Avoiding name clashes with Rails
+      def walruz_memoize(*methods)
         methods.each do |method|
-          self.memoize_method(method)
+          self.walruz_memoize_method(method)
         end
       end
 
-      def memoize_method(method)
+      def walruz_memoize_method(method)
         memoized = {}
         original_method = self.instance_method(method)
         self.send(:define_method, method) do |*params|
