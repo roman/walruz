@@ -37,6 +37,7 @@ module Walruz
   end
   
   base_path = File.dirname(__FILE__)
+  autoload :Memoization, base_path + '/walruz/core_ext/memoization'
   autoload :Actor,   base_path + '/walruz/actor'
   autoload :Subject, base_path + '/walruz/subject'
   autoload :Policy,  base_path + '/walruz/policy'

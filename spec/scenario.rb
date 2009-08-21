@@ -1,3 +1,25 @@
+class Foo
+  include Walruz::Memoization
+
+  def initialize
+    @first = nil
+  end
+
+  def highcost
+    @first = @first.nil?
+    if @first
+      @first = false
+      "This is the first time"
+    else
+      "This is the second time"
+    end
+  end
+
+  memoize :highcost
+
+end
+
+
 class Beatle
   include Walruz::Actor
   include Walruz::Subject
