@@ -12,7 +12,9 @@ module Walruz
   # [<b><tt>satisfies(policy_label, subject)</tt></b>] Returns Either nil if the actor and subject don't satisfy the policy or a Hash with the parameters returned from the Policy.
   #
   module Actor
-    
+    include Walruz::Manager::AuthorizationQuery
+    include Walruz::Memoization
+
     # @overload can?(action, subject)
     #   Allows an <em>actor</em> to check if he can perform an <em>action</em> on a given <em>subject</em>.
     #   === Note:
@@ -32,18 +34,8 @@ module Walruz
     #   @param [Boolean] A boolean indicating if you want to reset the cached result.
     #   @return [Boolean] A boolean indicating if the <em>actor</em> is authorized to perform the <em>action</em> (or not) on the <em>subject</em>.
     #
-    def can?(*args)
-      if args.size == 2
-        (cached_values_for_can[args] ||= can_without_caching(*args))[0]
-      elsif args.size == 3 
-        if args.pop
-          (cached_values_for_can[args] = can_without_caching(*args))[0]
-        else
-          (cached_values_for_can[args] ||= can_without_caching(*args))[0]
-        end
-      else
-        raise ArgumentError.new("wrong number of arguments (%d for 2)" % args.size) 
-      end
+    def can?(action, subject)
+      super(self, action, subject)
     end
     
     
@@ -68,31 +60,10 @@ module Walruz
     # 
     #   @param [Symbol] The action as it is declared on the <tt>check_authorizations</tt> method on the <em>subject</em> class.
     #   @param [Walruz::Subject] The <em>subject</em> on which the <em>actor</em> wants to execute the <em>action</em>.
-    #   @param [Boolean] A boolean indicating if you want to reset the cached result.
+    #   @param [Symbol] A symbol with the value ":reload" indicating that you want to reset the cached result.
     #   @return [Hash] Parameters returned from the <em>policy</em>.
-    def authorize(*args)
-      if args.size == 2
-        cached_values_for_can[args] ||= can_without_caching(*args)
-        cached_values_for_can[args][0] ? cached_values_for_can[args][1] : nil
-      elsif args.size == 3 
-        if args.pop
-          cached_values_for_can[args] = can_without_caching(*args)[1]
-          cached_values_for_can[args][0] ? cached_values_for_can[args][1] : nil
-        else
-          cached_values_for_can[args] ||= can_without_caching(*args)[1]
-          cached_values_for_can[args][0] ? cached_values_for_can[args][1] : nil
-        end
-      else
-        raise ArgumentError.new("wrong number of arguments (%d for 2)" % args.size) 
-      end
-    end
-    
-    def can_without_caching(label, subject)
-      subject.can_be?(label, self)
-    end
-    
-    def cached_values_for_can
-      @_cached_values_for_can ||= {}
+    def authorize(action, subject)
+      super(self, action, subject)
     end
     
     #
@@ -108,15 +79,7 @@ module Walruz
     #
     #    
     def authorize!(label, subject)
-      result = subject.can_be?(label, self)
-      if result[0]
-        cached_values_for_can[[label, subject]] = result
-        result[1]
-      else
-        response_params = result[1]
-        error_message = response_params[:error_message] || "You are not authorized to access this content"
-        raise NotAuthorized.new(self, subject, label, error_message) 
-      end
+      super(self, label, subject)
     end
     
     #
@@ -128,11 +91,8 @@ module Walruz
     # @return [Boolean] saying if the <em>actor</em> and the <em>subject</em> satisify the <em>policy</em>.
     #
     def satisfies?(policy_label, subject)
-      policy_clz = Walruz.fetch_policy(policy_label)
-      result = policy_clz.return_policy.new.safe_authorized?(self, subject)
-      result[0]
+      super(self, policy_label, subject)
     end
-    
     
     #
     # Allows an <em>actor</em> to check if he satisfies the condition of a <em>policy</em> with a given <em>subject</em>.
@@ -143,13 +103,10 @@ module Walruz
     # @return [Hash] Hash with the parameters returned from the <em>policy</em> if the <em>actor</em> and the <em>subject</em> satisfy the <em>policy</em>, nil otherwise.
     #
     def satisfies(policy_label, subject)
-      policy_clz = Walruz.fetch_policy(policy_label)
-      result = policy_clz.return_policy.new.safe_authorized?(self, subject)
-      result[0] ? result[1] : nil
+      super(self, policy_label, subject)
     end
     
-    
-    protected :can_without_caching, :cached_values_for_can
+    walruz_memoize :can?, :authorize, :satisfies?, :satisfies 
     
   end
 end
