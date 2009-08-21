@@ -67,11 +67,14 @@ module Walruz
                 end
               end
       
-      result = subject.class._walruz_policies[action].
-                          return_policy.
-                          new.
-                          safe_authorized?(actor, subject)
-      
+      begin
+        result = subject.class._walruz_policies[action].
+                              return_policy.
+                              new.
+                              safe_authorized?(actor, subject)
+      rescue PolicyHalted => e
+        result = [false, {:error_message => e.message}]
+      end
       result
     end
 

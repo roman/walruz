@@ -31,8 +31,18 @@ class Beatle
   def initialize(name)
     @name = name
     @songs = []
+    @invoke_helter_skelter = nil 
     @colaborations = []
   end
+
+  def invoke_helter_skelter=(bool)
+    @invoke_helter_skellter = bool
+  end
+
+  def helter_skelter_mode?
+    !!@invoke_helter_skellter
+  end
+
   
   def sing_the_song(song)
     response = authorize!(:sing, song)
@@ -129,11 +139,23 @@ class ColaboratingWithJohnPolicy < Walruz::Policy
   
 end
 
+class HelterSkellterPolicy < Walruz::Policy
+
+  def authorized?(beatle, song)
+    if beatle == Beatle::PAUL && beatle.helter_skelter_mode?
+      halt("I wanna sing helter skellter!!! YEAAAHHH")
+    else
+      false
+    end
+  end
+
+end
+
 class Song
   include Walruz::Subject
   extend Walruz::Utils
 
-  check_authorizations :sing => any(AuthorPolicy, AuthorInColaborationPolicy),
+  check_authorizations :sing => any(HelterSkellterPolicy, AuthorPolicy, AuthorInColaborationPolicy),
                        :sell => all(AuthorPolicy, negate(AuthorInColaborationPolicy)),
                        :sing_with_john => ColaboratingWithJohnPolicy
   attr_accessor :name

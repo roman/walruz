@@ -15,7 +15,11 @@ module Walruz
         @policies[child.policy_label] = child
       end
     end
-    
+
+    def halt(msg="You are not authorized")
+      raise PolicyHalted.new(msg)
+    end
+
     
     # @see Walruz.policies
     def self.policies
@@ -188,6 +192,7 @@ module Walruz
     def params
       @params ||= {}
     end
+
     
   end
 end
