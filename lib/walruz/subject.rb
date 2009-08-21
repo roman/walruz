@@ -39,36 +39,6 @@ module Walruz
       end
     end
     
-    def can_be?(action, actor) # :nodoc:
-      check_authorization_actions_are_setted(action)
-      action = if self.class._walruz_policies.key?(:default)
-                self.class._walruz_policies.key?(action) ? action : :default
-              else
-                if self.class._walruz_policies.key?(action) 
-                  action
-                else 
-                  raise ActionNotFound.new(:subject_action, :subject => self, 
-                                                            :action => action)
-                end
-              end
-      
-      result = self.class._walruz_policies[action].
-                          return_policy.
-                          new.
-                          safe_authorized?(actor, self)
-      
-      result
-    end
-    
-    def check_authorization_actions_are_setted(action) # :nodoc:
-      if self.class._walruz_policies.nil?
-        message =<<BEGIN
-You need to invoke `check_authorizations :#{action} => Policies::SomePolicy` on the #{self.class.name} class
-BEGIN
-        raise AuthorizationActionsNotDefined.new(message)
-      end
-    end
-    
     module ClassMethods
       
       #

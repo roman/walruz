@@ -68,18 +68,18 @@ describe 'Walruz::Actor' do
   describe '#can?' do
     
     it "should be invoked only the first time and then return a cached solution" do
-      Song::YELLOW_SUBMARINE.should_receive(:can_be?).once.and_return([true, {}])
-      Beatle::JOHN.can?(:sing, Song::YELLOW_SUBMARINE, true)
+      Walruz::Manager.should_receive(:check_authorization).once.and_return([true, {}])
+      Beatle::JOHN.can?(:sing, Song::YELLOW_SUBMARINE, :reload)
       Beatle::JOHN.can?(:sing, Song::YELLOW_SUBMARINE)
     end
     
-    it "if a boolean third parameter is received it should not use the cached result" do
-      Beatle::JOHN.stub!(:can_without_caching).and_return([true, {}])
+    it "if a :reload symbol is passed as the third parameter it should not use the cached result" do
+      Walruz::Manager.stub!(:check_authorization).and_return([true, {}])
       Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE).should be_true
       
-      Beatle::JOHN.stub!(:can_without_caching).and_return([false, {}])
+      Walruz::Manager.stub!(:check_authorization).and_return([false, {}])
       Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE).should be_true
-      Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE, true).should be_false
+      Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE, :reload).should be_false
     end
     
     it "should receive at least 2 parameters" do
@@ -90,7 +90,7 @@ describe 'Walruz::Actor' do
     
     it "should receive at most 3 parameters" do
       lambda do
-        Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE, true, false)
+        Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE, :reload, false)
       end.should raise_error(ArgumentError)
     end
     
