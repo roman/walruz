@@ -20,6 +20,9 @@ module Walruz
     
   end
   
+  class PolicyHalted < Exception 
+  end
+  
   class AuthorizationActionsNotDefined < Exception
   end
   

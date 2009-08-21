@@ -58,5 +58,35 @@ describe Walruz::Policy do
     end
   
   end
+
+  describe "when using the halt method inside a policy" do
+
+    before(:each) do
+      Beatle::PAUL.invoke_helter_skelter = true
+    end
+
+    after(:each) do
+      Beatle::PAUL.invoke_helter_skelter = false
+    end
+
+    it "should raise a PolicyHalted exception" do
+      lambda do
+        Beatle::PAUL.authorize!(:sing, Song::YESTERDAY)
+      end.should raise_error(Walruz::NotAuthorized, "I wanna sing helter skellter!!! YEAAAHHH")
+    end
+
+    describe "on composed policies" do
+
+      before(:each) do
+        AuthorPolicy.should_not_receive(:new)
+      end
+      
+      it "should not invoke any other policy" do
+        Beatle::PAUL.can?(:sing, Song::YESTERDAY)
+      end
+
+    end
+
+  end
   
 end
