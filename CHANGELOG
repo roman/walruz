@@ -4,7 +4,9 @@ invocation that was in Walruz::Actor and Walruz::Subject before
 * New module <tt>Walruz::Memoize</tt> that provides memoization methods to
 cache the result of the <tt>can?</tt>, <tt>authorize</tt>, <tt>satisfies?</tt>
 and <tt>satisfies</tt> methods in the Actor model
-
+* Added the Walruz::Policy#halt method to stop execution of policies
+authorizations (even if they are in a composite policy), and return false with
+an error message.
 
 * 0.0.7 (July 23, 2009)
 * New +Array#only_authorized_for+ method for filtering arrays of _subjects_
