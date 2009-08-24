@@ -40,11 +40,6 @@ module Walruz
 
     end
 
-    extend AuthorizationQuery
-    class << self
-      include Memoization
-      walruz_memoize :can?, :authorize, :satisfies?, :satisfies
-    end
 
     #
     # core method used on all the actor methods:

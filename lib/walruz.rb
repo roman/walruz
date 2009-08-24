@@ -89,6 +89,14 @@ module Walruz
     end
     
   end
+
+  # including the Walruz::Manager::AuthorizationQuery methods
+  
+  extend Manager::AuthorizationQuery
+  class << self
+    include Memoization
+    walruz_memoize :can?, :authorize, :satisfies?, :satisfies
+  end
   
 end
 
