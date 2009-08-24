@@ -68,16 +68,16 @@ describe 'Walruz::Actor' do
   describe '#can?' do
     
     it "should be invoked only the first time and then return a cached solution" do
-      Walruz::Manager.should_receive(:check_authorization).once.and_return([true, {}])
+      Walruz::Manager.should_receive(:check_action_authorization).once.and_return([true, {}])
       Beatle::JOHN.can?(:sing, Song::YELLOW_SUBMARINE, :reload)
       Beatle::JOHN.can?(:sing, Song::YELLOW_SUBMARINE)
     end
     
     it "if a :reload symbol is passed as the third parameter it should not use the cached result" do
-      Walruz::Manager.stub!(:check_authorization).and_return([true, {}])
+      Walruz::Manager.stub!(:check_action_authorization).and_return([true, {}])
       Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE).should be_true
       
-      Walruz::Manager.stub!(:check_authorization).and_return([false, {}])
+      Walruz::Manager.stub!(:check_action_authorization).and_return([false, {}])
       Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE).should be_true
       Beatle::JOHN.can?(:sing, Song::ALL_YOU_NEED_IS_LOVE, :reload).should be_false
     end

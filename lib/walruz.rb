@@ -48,6 +48,12 @@ module Walruz
   autoload :Utils,   base_path + '/walruz/utils'
   
 
+  def self.version
+    require "yaml"
+    version = YAML.load_file(File.dirname(__FILE__) + "/../VERSION.yml") 
+    "%s.%s.%s" % [version[:major], version[:minor], version[:patch]]
+  end
+
   def self.setup
     config = Config.new
     yield config
@@ -88,6 +94,14 @@ module Walruz
       end
     end
     
+  end
+
+  # including the Walruz::Manager::AuthorizationQuery methods
+  
+  extend Manager::AuthorizationQuery
+  class << self
+    include Memoization
+    walruz_memoize :can?, :authorize, :satisfies?, :satisfies
   end
   
 end
