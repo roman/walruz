@@ -6,7 +6,7 @@ describe Walruz do
     Walruz.should respond_to(:policies)
   end
   
-  describe '#policies' do
+  describe '.policies' do
     
     it "should return all the policies created that have a label" do
       Walruz.policies.should_not be_nil
@@ -17,7 +17,7 @@ describe Walruz do
     
   end
   
-  describe "#fetch_policy" do
+  describe ".fetch_policy" do
     
     it "should grab the policy if this is registered" do
       Walruz.fetch_policy(:in_colaboration).should == AuthorInColaborationPolicy
@@ -29,6 +29,15 @@ describe Walruz do
       end.should raise_error(Walruz::ActionNotFound)
     end
     
+  end
+
+  describe ".version" do
+
+    it "should return a string representing the current version" do
+      version = YAML.load_file(File.dirname(__FILE__) + "/../../VERSION.yml")
+      Walruz.version.should == "#{version[:major]}.#{version[:minor]}.#{version[:patch]}"
+    end
+
   end
 
 end
