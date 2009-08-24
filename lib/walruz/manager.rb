@@ -9,11 +9,11 @@ module Walruz
     module AuthorizationQuery
 
       def can?(actor, action, subject)
-        Walruz::Manager.check_authorization(actor, action, subject)[0]
+        Walruz::Manager.check_action_authorization(actor, action, subject)[0]
       end
 
       def authorize!(actor, action, subject)
-        result = Walruz::Manager.check_authorization(actor, action, subject)
+        result = Walruz::Manager.check_action_authorization(actor, action, subject)
         if result[0]
           result[1]
         else
@@ -24,19 +24,17 @@ module Walruz
       end
 
       def authorize(actor, action, subject)
-        result = Walruz::Manager.check_authorization(actor, action, subject)
+        result = Walruz::Manager.check_action_authorization(actor, action, subject)
         result[0] ? result[1] : nil
       end
 
       def satisfies?(actor, policy_label, subject)
-        policy_clz = Walruz.fetch_policy(policy_label)
-        result     = policy_clz.return_policy.new.safe_authorized?(actor, subject)
+        result = Walruz::Manager.check_policy_authorization(actor, policy_label, subject)
         result[0]
       end
 
       def satisfies(actor, policy_label, subject)
-        policy_clz = Walruz.fetch_policy(policy_label)
-        result     = policy_clz.return_policy.new.safe_authorized?(actor, subject)
+        result = Walruz::Manager.check_policy_authorization(actor, policy_label, subject)
         result[0] ? result[1] : nil
       end
 
@@ -54,8 +52,8 @@ module Walruz
     # authorize!
     # authorize
     # :private:
-    def self.check_authorization(actor, action, subject)
-      check_authorization_action_is_declared_on_subject(subject, action)
+    def self.check_action_authorization(actor, action, subject)
+      check_action_authorization_is_declared_on_subject(subject, action)
       action = if subject.class._walruz_policies.key?(:default)
                 subject.class._walruz_policies.key?(action) ? action : :default
               else
@@ -73,14 +71,27 @@ module Walruz
                               new.
                               safe_authorized?(actor, subject)
       rescue PolicyHalted => e
-        result = [false, {:error_message => e.message}]
+        result = [false, {:error_message => e.message }]
       end
+
       result
+    end
+
+    def self.check_policy_authorization(actor, policy_label, subject)
+      policy_clz = Walruz.fetch_policy(policy_label)
+      
+      begin
+        result = policy_clz.return_policy.new.safe_authorized?(actor, subject)
+      rescue PolicyHalted => e
+        result = [false, { :error_message => e.message }]
+      end
+
+      result 
     end
 
     private
 
-    def self.check_authorization_action_is_declared_on_subject(subject, action) 
+    def self.check_action_authorization_is_declared_on_subject(subject, action) 
       if subject.class._walruz_policies.nil?
         message =<<-BEGIN
 You need to invoke `check_authorizations :#{action} => Policies::SomePolicy` on the #{subject.class.name} class
