@@ -19,7 +19,7 @@ module Walruz
         else
           response_params = result[1]
           error_message   = response_params[:error_message] || "You are not authorized to access this content"
-          raise NotAuthorized.new(self, subject, action, error_message)
+          raise NotAuthorized.new(actor, subject, action, error_message)
         end
       end
 
