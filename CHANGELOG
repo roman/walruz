@@ -1,3 +1,9 @@
+* 0.0.10 (Aug 26, 2009) Walruz wanted to be an actor too...
+* Fixed bug related to Walruz::NotAuthorized info, the actor was Walruz
+instead of the current actor, when the authorization was being called from
+the Walruz.authorize! method
+
+
 * 0.0.9 (Aug 24, 2009) Policies deserve some love too
 * Renamed the Walruz::Manager.check_authorization to
 Walruz::Manager.check_action_authorization
