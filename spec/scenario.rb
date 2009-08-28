@@ -172,6 +172,10 @@ class Song
     end
     owner.songs << self
   end
+
+  def inspect
+    self.name
+  end
   
   unless defined?(A_DAY_IN_LIFE)
     A_DAY_IN_LIFE        = self.new("A Day In Life", Colaboration::JOHN_PAUL)
