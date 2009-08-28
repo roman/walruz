@@ -12,7 +12,6 @@ module Walruz
 
     def enable_will_paginate_extension(options = {})
       options = { :include_rails => false }.merge!(options)
-      debugger
       gem 'mislav-will_paginate'
       require 'will_paginate'
       require File.expand_path(File.join(File.dirname(__FILE__),  'more', 'pagination'))
