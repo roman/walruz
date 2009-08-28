@@ -1,51 +1,14 @@
 module Walruz
 
-  class NotAuthorized < Exception
-    
-    attr_reader :actor
-    attr_reader :subject
-    attr_reader :action
-    
-    def initialize(actor, subject, action, error_message = nil)
-      @actor   = actor
-      @subject = subject
-      @action  = action
-      
-      if error_message.nil?
-        super
-      else
-        super(error_message)
-      end
-    end
-    
-  end
-  
-  class PolicyHalted < Exception 
-  end
-  
-  class AuthorizationActionsNotDefined < Exception
-  end
-  
-  class ActionNotFound < Exception
-    
-    def initialize(failure, params = {})
-      case failure
-      when :subject_action
-        super("%s class doesn't have an authorization action called :%s nor a :default policy" % [params[:subject].class.name, params[:action]])
-      when :policy_label
-        super("There is no Policy with the label %s" % params[:label])
-      end
-    end
-    
-  end
-  
   base_path = File.dirname(__FILE__)
+  require base_path + '/walruz/errors'
   autoload :Memoization, base_path + '/walruz/core_ext/memoization'
   autoload :Manager, base_path + '/walruz/manager'
   autoload :Actor,   base_path + '/walruz/actor'
   autoload :Subject, base_path + '/walruz/subject'
   autoload :Policy,  base_path + '/walruz/policy'
   autoload :Utils,   base_path + '/walruz/utils'
+  autoload :Config,  base_path + '/walruz/config'
   
 
   def self.version
@@ -80,31 +43,5 @@ module Walruz
     policy_clz
   end
   
-  class Config
-    
-    def actors=(actors)
-      Array(actors).each do |actor|
-        actor.send(:include, Actor)
-      end
-    end
-
-    def subjects=(subjects)
-      Array(subjects).each do |subject|
-        subject.send(:include, Subject)
-      end
-    end
-    
-  end
-
-  # including the Walruz::Manager::AuthorizationQuery methods
-  
-  extend Manager::AuthorizationQuery
-  class << self
-    include Memoization
-    walruz_memoize :can?, :authorize, :satisfies?, :satisfies
-  end
-  
+  Config.add_authorization_query_methods_to(self) 
 end
-
-require File.dirname(__FILE__) + '/walruz/core_ext/array'
-Array.send(:include, Walruz::CoreExt::Array)
