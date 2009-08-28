@@ -31,7 +31,7 @@ module Walruz
 
         def filter_authorized_items_in_collection(actor, action, acum, pcollection, offset = 0)
           pcollection[offset, pcollection.size].all? do |item|
-            if actor.can?(action, item)
+            if Walruz.can?(actor, action, item)
               acum << item
               if acum.size < pcollection.per_page
                 true
