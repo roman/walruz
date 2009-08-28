@@ -1,4 +1,8 @@
-* 0.0.10 (Aug 26, 2009) Walruz wanted to be an actor too...
+* 0.0.10 (Aug 26, 2009) Paginating the Walruz
+* Moving several code from the Walruz module, adding new files like
+walruz/config.rb and walruz/errors.rb to have all that code there and keep the
+walruz.rb file as clean as possible
+* Added new semi-pagination feature integrated with WillPaginate
 * Fixed bug related to Walruz::NotAuthorized info, the actor was Walruz
 instead of the current actor, when the authorization was being called from
 the Walruz.authorize! method
