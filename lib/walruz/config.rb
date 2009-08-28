@@ -11,7 +11,8 @@ module Walruz
     end
 
     def enable_will_paginate_extension(options = {})
-      options = { :include_active_record => false }.merge!(options)
+      options = { :include_rails => false }.merge!(options)
+      debugger
       gem 'mislav-will_paginate'
       require 'will_paginate'
       require File.expand_path(File.join(File.dirname(__FILE__),  'more', 'pagination'))
@@ -19,12 +20,12 @@ module Walruz
       safe_include(WillPaginate::Collection, Walruz::More::Pagination::WillPaginateCollection)
       safe_include(Array, Walruz::More::Pagination::Base)
 
-      if options[:include_active_record]
-        raise RuntimeError.new("You ask to enable Walruz extensions on ActiveRecord::Base, but it was not found. Maybe you should require 'active_record' first") unless defined?("ActiveRecord::Base")
-        safe_include(ActiveRecord::Base, Walruz::More::Pagination::Base)
+      if options[:include_rails]
+        raise LoadError.new("You ask to enable Walruz extensions on ActiveRecord::Base, but it was not found. Maybe you should require 'active_record' first") unless defined?("ActiveRecord::Base")
+        safe_include(::ActiveRecord::Base, Walruz::More::Pagination::Base)
       end
     rescue Gem::LoadError
-      raise RuntimeError.new("You ask to enable Walruz extensions on WillPaginate, but it was not found, Maybe you should require 'will_paginate' first")
+      raise LoadError.new("You ask to enable Walruz extensions on WillPaginate, but it was not found, Maybe you should require 'will_paginate' first")
     end
 
     def enable_array_extension
