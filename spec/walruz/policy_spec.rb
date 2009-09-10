@@ -5,6 +5,17 @@ describe Walruz::Policy do
   it "should provide the with_actor utility" do
     AuthorPolicy.should respond_to(:with_actor)
   end
+
+  it "should not have composed policies on the global policy list by default" do
+    CombinedPolicy = Walruz::Utils.any(SubjectIsActorPolicy, HelterSkellterPolicy)
+    Walruz.policies[:combined_policy].should be_nil 
+  end
+
+  it "should have a composed policy in the global policy list if the label name is declared after composition" do
+    CombinedPolicy = Walruz::Utils.any(SubjectIsActorPolicy, HelterSkellterPolicy)
+    CombinedPolicy.set_policy_label(:combined_policy)
+    Walruz.policies[:combined_policy].should == CombinedPolicy
+  end
   
   it "should generate an indicator that the policy was executed after authorization queries" do
     policy = Beatle::PAUL.authorize(:sing, Song::YESTERDAY)

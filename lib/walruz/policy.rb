@@ -173,7 +173,13 @@ module Walruz
     #   - label: Symbol that represents the policy
     # 
     def self.set_policy_label(label)
-      Walruz.policies[label] = Walruz.policies.delete(self.policy_label)
+      policy = Walruz.policies[self.policy_label]
+      if policy.nil?
+        Walruz.policies[label] = self
+      else
+        Walruz.policies.delete(self.policy_label)
+        Walruz.policies[label] = policy
+      end
       @policy_label = label
     end
     
