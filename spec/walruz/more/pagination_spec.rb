@@ -88,6 +88,26 @@ describe Walruz::More::Pagination do
       result.current_page.should == 3
     end
   
+    it "should filter collections with just a page of autorized items, and work properly for the next page" do
+      songs = [Song::ALL_YOU_NEED_IS_LOVE] * 4
+
+      result = songs.authorized_paginate(Beatle::JOHN, :sing, :page => 1, :per_page => 4)
+      result.should have(4).songs
+      result.next_page.should == 1
+      result.walruz_offset.should == 4
+
+      result = songs.authorized_paginate(Beatle::JOHN, :sing, :page => result.next_page, :per_page => 4, :offset => result.walruz_offset)
+      result.should be_empty
+      result.next_page.should be_nil
+      result.walruz_offset.should be_nil
+    end
+
+    it "should not fail when the offset is greater than the items per page parameter" do
+      lambda do
+        @songs.authorized_paginate(Beatle::RINGO, :sing, :page => 1, :per_page => 5, :offset => 6)
+      end.should_not raise_error
+    end
+
   end
 
 end

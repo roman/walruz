@@ -30,20 +30,17 @@ module Walruz
         end
 
         def filter_authorized_items_in_collection(actor, action, acum, pcollection, offset = 0)
-          pcollection[offset, pcollection.size].all? do |item|
+          return if offset > pcollection.size
+          pcollection[offset, pcollection.size].each_with_index do |item, i|
             if Walruz.can?(actor, action, item)
               acum << item
-              if acum.size < pcollection.per_page
-                true
-              else
-                pcollection.walruz_offset = pcollection.index(item) + 1
-                false
-              end
-            else
-              true
-            end
-          end
-        end
+              unless acum.size < pcollection.per_page
+                pcollection.walruz_offset = i + 1
+                break
+              end # unless
+            end # if
+          end # each_with_index
+        end # filter
 
       end
 
