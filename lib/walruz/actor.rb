@@ -105,6 +105,11 @@ module Walruz
     def satisfies(policy_label, subject)
       super(self, policy_label, subject)
     end
+
+    # TODO: documenting this method
+    def satisfies!(policy_label, subject)
+      super(self, policy_label, subject)
+    end
     
     walruz_memoize :can?, :authorize, :satisfies?, :satisfies 
     

@@ -1,4 +1,6 @@
-* 0.0.10 (Aug 26, 2009) Paginating the Walruz
+* 0.0.10 (Sep 10, 2009) Paginating the Walruz
+* Adding a new method satisfies!, same behaviour than satisfies, but raises a
+Walruz::NotAuthorized error if the actor and subject don't satisfy the policy
 * Moving several code from the Walruz module, adding new files like
 walruz/config.rb and walruz/errors.rb to have all that code there and keep the
 walruz.rb file as clean as possible

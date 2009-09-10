@@ -41,7 +41,39 @@ describe Walruz::Manager do
             e.subject.should == Song::YESTERDAY
             e.action.should == :sing
           end
+        end
         
+      end
+    end
+
+    describe "when executing the satisfies! method" do
+      
+      describe "and the actor and subject satisfy the policy" do
+
+        it "should return the policy hash" do
+          policy_params = Walruz.satisfies!(Beatle::RINGO, :subject_is_actor, Beatle::RINGO)
+          policy_params.should_not be_nil
+          policy_params[:subject_is_actor?].should be_true
+        end
+
+      end
+
+      describe "and the actor and subject can't satisfy the policy" do
+        
+        it "should raise a Walruz::NotAuthorized exception" do
+          lambda do
+            Walruz.satisfies!(Beatle::RINGO, :subject_is_actor, Beatle::JOHN)
+          end.should raise_error(Walruz::NotAuthorized)
+        end
+
+        it "should raise a Walruz::NotAuthorized exception with info about the actor, subject and access action" do
+          begin
+            Walruz.satisfies!(Beatle::RINGO, :subject_is_actor, Beatle::JOHN)
+          rescue Walruz::NotAuthorized => e
+            e.actor.should == Beatle::RINGO
+            e.subject.should == Beatle::JOHN
+            e.action.should == :access
+          end
         end
 
       end

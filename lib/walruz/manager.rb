@@ -38,6 +38,17 @@ module Walruz
         result[0] ? result[1] : nil
       end
 
+      def satisfies!(actor, policy_label, subject)
+        result = Walruz::Manager.check_policy_authorization(actor, policy_label, subject)
+        if result[0]
+          result[1]
+        else
+          response_params = result[1]
+          error_message = response_params[:error_message] || "You are not authorized to access this content"
+          raise NotAuthorized.new(actor, subject, :access, error_message)
+        end
+      end
+
     end
 
 

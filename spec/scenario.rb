@@ -92,6 +92,7 @@ class Colaboration
 end
 
 class SubjectIsActorPolicy < Walruz::Policy
+  set_policy_label :subject_is_actor
   
   def authorized?(actor, subject)
     actor == subject
