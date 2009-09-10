@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Roman Gonzalez"]
-  s.date = %q{2009-08-24}
+  s.date = %q{2009-09-10}
   s.email = %q{roman@noomi.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -25,9 +25,15 @@ Gem::Specification.new do |s|
      "VERSION.yml",
      "lib/walruz.rb",
      "lib/walruz/actor.rb",
+     "lib/walruz/config.rb",
      "lib/walruz/core_ext/array.rb",
      "lib/walruz/core_ext/memoization.rb",
+     "lib/walruz/errors.rb",
      "lib/walruz/manager.rb",
+     "lib/walruz/more/pagination.rb",
+     "lib/walruz/more/pagination/base.rb",
+     "lib/walruz/more/pagination/view_helper.rb",
+     "lib/walruz/more/pagination/will_paginate_collection.rb",
      "lib/walruz/policy.rb",
      "lib/walruz/subject.rb",
      "lib/walruz/utils.rb",
@@ -35,9 +41,11 @@ Gem::Specification.new do |s|
      "spec/spec.opts",
      "spec/spec_helper.rb",
      "spec/walruz/actor_spec.rb",
+     "spec/walruz/config_spec.rb",
      "spec/walruz/core_ext/array_spec.rb",
      "spec/walruz/core_ext/memoization_spec.rb",
      "spec/walruz/manager_spec.rb",
+     "spec/walruz/more/pagination_spec.rb",
      "spec/walruz/policy_spec.rb",
      "spec/walruz/subject_spec.rb",
      "spec/walruz/utils_spec.rb",
@@ -55,9 +63,11 @@ Gem::Specification.new do |s|
     "spec/scenario.rb",
      "spec/spec_helper.rb",
      "spec/walruz/actor_spec.rb",
+     "spec/walruz/config_spec.rb",
      "spec/walruz/core_ext/array_spec.rb",
      "spec/walruz/core_ext/memoization_spec.rb",
      "spec/walruz/manager_spec.rb",
+     "spec/walruz/more/pagination_spec.rb",
      "spec/walruz/policy_spec.rb",
      "spec/walruz/subject_spec.rb",
      "spec/walruz/utils_spec.rb",
