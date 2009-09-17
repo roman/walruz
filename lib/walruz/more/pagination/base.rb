@@ -7,6 +7,7 @@ module Walruz
         def authorized_paginate(actor, action, *args)
           # All the args are forwarded to WillPaginate, he knows best what to do
           options = args.last if Hash === args.last  
+          options[:page] ||= 1
           offset  = options.delete(:offset) || 0
           acum = []
           while true
