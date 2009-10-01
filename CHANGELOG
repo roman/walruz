@@ -1,4 +1,4 @@
-* 0.0.10 (Sep 10, 2009) Paginating the Walruz
+* 0.0.10 (Oct 1, 2009) Paginating the Walruz
 * Adding support to specify policy labels for composed policies
 * Adding a new method to the Walruz::Manager class: satisfies!, same behaviour than satisfies, but raises a
 Walruz::NotAuthorized error if the actor and subject can't satisfy the policy
