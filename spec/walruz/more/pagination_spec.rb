@@ -108,6 +108,12 @@ describe Walruz::More::Pagination do
       end.should_not raise_error
     end
 
+    it "should work with an offset specified as an string" do
+      lambda do
+        @songs.authorized_paginate(Beatle::RINGO, :sing, :page => 1, :per_page => 5, :offset => '6')
+      end.should_not raise_error
+    end
+
   end
 
 end
